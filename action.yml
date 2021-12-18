@@ -75,7 +75,8 @@ runs:
       run: |
         with open('.coverage-total', 'r') as t:
           total = float(t.read().rstrip())
-        if total < float('${{ inputs.threshold }}'):
+        min = float('${{ inputs.threshold }}')
+        if total < min:
           raise SystemExit(
             f"Total Coverage ({total}) falls below minimum threshold of {min}."
           )
