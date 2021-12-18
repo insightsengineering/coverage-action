@@ -1,5 +1,5 @@
 name: Code Coverage Report Action
-author: Roche
+author: Inisghts Engineering
 description: Action that converts a Cobertura XML report into a markdown report.
 
 inputs:
@@ -31,11 +31,6 @@ branding: # https://feathericons.com/
 runs:
   using: composite
   steps:
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
-
     - name: Install PyCobertura
       run: pip install -q pycobertura==2.1.0
       shell: bash

@@ -10,7 +10,7 @@ Action that converts a Cobertura XML report into a markdown report.
 Composite
 
 ### Author
-Roche
+Insights Engineering
 
 ### Inputs
 * `token`:
