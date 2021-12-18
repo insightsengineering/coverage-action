@@ -30,8 +30,8 @@ jobs:
             fail: true
             publish: true
           - path: test-python.xml
-            threshold: 80
-            fail: false
+            threshold: 91.23
+            fail: true
             publish: false
     steps:
       - name: Checkout Code
