@@ -56,7 +56,7 @@ runs:
     - name: Generate report body
       if: "contains(inputs.publish, 'true')"
       run: |
-        echo -e "### Code Coverage for ${{ github.sha }}\n" > .coverage-output.final
+        echo -e "## Code Coverage for ${{ github.sha }}\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
