@@ -10,7 +10,7 @@ Action that converts a Cobertura XML report into a markdown report.
 Composite
 
 ### Author
-Roche
+Insights Engineering
 
 ### Inputs
 * `token`:
@@ -103,4 +103,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/2#issuecomment-997215827).
+An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/3#issuecomment-997221532).

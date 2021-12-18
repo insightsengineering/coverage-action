@@ -1,5 +1,5 @@
 name: Code Coverage Report Action
-author: Roche
+author: Inisghts Engineering
 description: Action that converts a Cobertura XML report into a markdown report.
 
 inputs:
@@ -36,9 +36,10 @@ runs:
       with:
         python-version: '3.10'
 
-    - name: Install PyCobertura
-      run: pip install -q pycobertura==2.1.0
-      shell: bash
+    - name: Install pycobertura
+      uses: BSFishy/pip-action@v1
+      with:
+        packages: pycobertura==2.1.0
 
     - name: Generate text report
       run: |
@@ -55,7 +56,7 @@ runs:
     - name: Generate report body
       if: "contains(inputs.publish, 'true')"
       run: |
-        echo -e "### Code Coverage for ${{ github.sha }}\n" > .coverage-output.final
+        echo -e "## Code Coverage for ${{ github.sha }}\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
