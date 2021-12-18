@@ -10,10 +10,11 @@ on:
       - main
 
 jobs:
-  lint:
+  test:
     name: Test action
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         reports:
           - path: test-branch.xml
@@ -29,7 +30,7 @@ jobs:
             fail: true
             publish: true
           - path: test-python.xml
-            threshold: 80
+            threshold: 91.23
             fail: false
             publish: false
     steps:
