@@ -103,4 +103,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/1#issuecomment-997105043).
+An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/2#issuecomment-997215827).
