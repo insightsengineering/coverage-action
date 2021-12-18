@@ -1,0 +1,45 @@
+---
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Test action
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        reports:
+          - path: test-branch.xml
+            threshold: 80
+            fail: true
+            publish: false
+          - path: test-missing-lines.xml
+            threshold: 50
+            fail: false
+            publish: true
+          - path: test-no-branch.xml
+            threshold: 90
+            fail: true
+            publish: true
+          - path: test-python.xml
+            threshold: 80
+            fail: false
+            publish: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        uses: ./
+        with:
+          path: ${{ matrix.reports.path }}
+          threshold: ${{ matrix.reports.threshold }}
+          fail: ${{ matrix.reports.fail }}
+          publish: ${{ matrix.reports.publish }}
