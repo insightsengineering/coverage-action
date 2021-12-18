@@ -36,10 +36,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Run tests
+      - name: Run test on ${{ matrix.reports.path }}
         uses: ./
         with:
-          path: ${{ matrix.reports.path }}
+          path: ./fixtures/${{ matrix.reports.path }}
           threshold: ${{ matrix.reports.threshold }}
           fail: ${{ matrix.reports.fail }}
           publish: ${{ matrix.reports.publish }}
