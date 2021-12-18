@@ -55,7 +55,7 @@ runs:
     - name: Generate report body
       if: "contains(inputs.publish, 'true')"
       run: |
-        echo -e "\`\`\`\n" > .coverage-output.final
+        echo -e "\`\`\`" > .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
         echo -e "\n_Minimum allowed coverage is \`$(cat .coverage-total)%\`_\n" >> .coverage-output.final
