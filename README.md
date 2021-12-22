@@ -85,7 +85,7 @@ jobs:
       - name: Your logic to generate the Cobertura XML goes here
         run: echo "Your logic to generate the Cobertura XML goes here"
 
-      - name: Run test on ${{ matrix.reports.path }}
+      - name: Produce the coverage report
         uses: insightsengineering/coverage-action@v1
         with:
           # Path to the Cobertura XML report.
