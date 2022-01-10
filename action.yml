@@ -125,7 +125,7 @@ runs:
 
     - name: Clean up intermediate files
       if: always()
-      run: rm .coverage-output.final .coverage-output .coverage-total .coverage-output.diff
+      run: rm -f .coverage-output.final .coverage-output .coverage-total .coverage-output.diff
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-branch }}
