@@ -129,14 +129,14 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-branch }}
-      if: ${{ contains(inputs.diff, 'true') && (steps.branch-name.outputs.current_branch == inputs.diff-branch) }}
+      if: ${{ inputs.diff && (steps.branch-name.outputs.current_branch == inputs.diff-branch) }}
       uses: EndBug/add-and-commit@v7
-        with:
-          remove: 'rm -rf *'
-          add: "${{ inputs.path }}"
-          branch: some-branch
-          message: 'Your commit message'
-          push: true
-          default_author: github_actions
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
+      with:
+        remove: 'rm -rf *'
+        add: "${{ inputs.path }}"
+        branch: some-branch
+        message: 'Your commit message'
+        push: true
+        default_author: github_actions
+        committer_name: GitHub Actions
+        committer_email: actions@github.com
