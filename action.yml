@@ -71,10 +71,16 @@ runs:
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: "contains(inputs.publish, 'true')"
       run: |
-        pycobertura diff --no-color --no-source ${{ inputs.path }} \
-          ${{ inputs.diff-storage }}/${{ inputs.path }} \
-          --output .coverage-output.diff
-        cat .coverage-output.diff
+        if [ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" ]
+        then {
+          pycobertura diff --no-color --no-source ${{ inputs.path }} \
+            ${{ inputs.diff-storage }}/${{ inputs.path }} \
+            --output .coverage-output.diff
+          cat .coverage-output.diff
+        } else {
+          echo "${{ inputs.diff-storage }}/${{ inputs.path }} not found! Not diffing."
+        }
+        fi
       shell: bash
 
     - name: Get total
@@ -90,7 +96,7 @@ runs:
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
-        if [ "${{ inputs.diff }}" == "true" ]
+        if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
         then {
           echo -e "### Diff against ${{ inputs.diff-branch }}\n" > .coverage-output.final
           echo -e "\`\`\`" >> .coverage-output.final
