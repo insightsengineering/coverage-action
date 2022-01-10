@@ -21,18 +21,30 @@ jobs:
             threshold: 80
             fail: true
             publish: false
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports
           - path: test-missing-lines.xml
             threshold: 50
             fail: false
             publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports
           - path: test-no-branch.xml
             threshold: 90
             fail: true
             publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports
           - path: test-python.xml
             threshold: 91.23
             fail: false
             publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports
     steps:
       - name: Checkout Code 🛎
         uses: actions/checkout@v2
@@ -44,3 +56,6 @@ jobs:
           threshold: ${{ matrix.reports.threshold }}
           fail: ${{ matrix.reports.fail }}
           publish: ${{ matrix.reports.publish }}
+          diff: ${{ matrix.reports.diff }}
+          diff-branch: ${{ matrix.reports.diff-branch }}
+          diff-storage: ${{ matrix.reports.diff-storage }}

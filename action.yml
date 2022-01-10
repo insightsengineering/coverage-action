@@ -3,10 +3,6 @@ author: Inisghts Engineering
 description: Action that converts a Cobertura XML report into a markdown report.
 
 inputs:
-  token:
-    description: Github token to use to publish the check.
-    required: false
-    default: ${{ github.token }}
   path:
     description: Path to the Cobertura coverage XML report.
     required: false
@@ -20,9 +16,21 @@ inputs:
     required: false
     default: true
   publish:
-    description: Path to package's root.
+    description: Publish the coverage report as an issue comment.
     required: false
     default: false
+  diff:
+    description: Create a diff of the coverage report.
+    required: false
+    default: false
+  diff-branch:
+    description: Branch to diff against.
+    required: false
+    default: main
+  diff-storage:
+    description: Branch where coverage reports are stored for diff purposes.
+    required: false
+    default: _xml_coverage_reports
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -47,19 +55,46 @@ runs:
         cat .coverage-output
       shell: bash
 
+    - name: Get branch names
+      id: branch-names
+      uses: tj-actions/branch-names@v5.1
+
+    - name: Fetch report from ${{ inputs.diff-storage }}
+      if: "contains(inputs.diff, 'true')"
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.diff-storage }}
+        path: ${{ inputs.diff-storage }}
+
+    - name: Generate diff against ${{ inputs.diff-branch }}
+      if: "contains(inputs.publish, 'true')"
+      run: |
+        pycobertura diff --no-color --no-source ${{ inputs.path }} \
+          ${{ inputs.diff-storage }}/${{ inputs.path }} --output .coverage-output.diff
+        cat .coverage-output.diff
+      shell: bash
+
     - name: Get total
       run: |
         grep -E "^TOTAL " .coverage-output | \
           awk '{print $NF}' | tr -d '%' > .coverage-total
       shell: bash
 
-    - name: Generate report body
+    - name: Generate issue comment body
       if: "contains(inputs.publish, 'true')"
       run: |
         echo -e "## Code Coverage Summary\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
+        if [ "${{ inputs.diff }}" == "true" ]
+        then {
+          echo -e "### Diff against ${{ inputs.diff-branch }}\n" > .coverage-output.final
+          echo -e "\`\`\`" >> .coverage-output.final
+          cat .coverage-output.diff >> .coverage-output.final
+          echo -e "\n\`\`\`\n" >> .coverage-output.final
+        }
+        fi
         echo -e "\nResults for commit: ${{ github.sha }}\n" >> .coverage-output.final
         echo -e "\n_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n" >> .coverage-output.final
         echo -e "\n:recycle: This comment has been updated with latest results\n" >> .coverage-output.final
@@ -71,7 +106,7 @@ runs:
       with:
         header: ${{ inputs.path }}
         path: .coverage-output.final
-        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Check threshold
       if: "contains(inputs.fail, 'true')"
@@ -84,3 +119,21 @@ runs:
             f"Total Coverage of {total}% falls below minimum threshold of {min}%."
           )
       shell: python
+
+    - name: Clean up intermediate files
+      if: always()
+      run: rm .coverage-output.final .coverage-output .coverage-total .coverage-output.diff
+      shell: bash
+
+    - name: Push XML report to ${{ inputs.diff-branch }}
+      if: "contains(inputs.diff, 'true') && ('${{ steps.branch-name.outputs.current_branch }}' == '${{ inputs.diff-branch }}')"
+      uses: EndBug/add-and-commit@v7
+        with:
+          remove: 'rm -rf *'
+          add: "${{ inputs.path }}"
+          branch: some-branch
+          message: 'Your commit message'
+          push: true
+          default_author: github_actions
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
