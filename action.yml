@@ -1,3 +1,5 @@
+---
+# yamllint disable rule:line-length
 name: Code Coverage Report Action
 author: Inisghts Engineering
 description: Action that converts a Cobertura XML report into a markdown report.
@@ -70,7 +72,8 @@ runs:
       if: "contains(inputs.publish, 'true')"
       run: |
         pycobertura diff --no-color --no-source ${{ inputs.path }} \
-          ${{ inputs.diff-storage }}/${{ inputs.path }} --output .coverage-output.diff
+          ${{ inputs.diff-storage }}/${{ inputs.path }} \
+          --output .coverage-output.diff
         cat .coverage-output.diff
       shell: bash
 
@@ -126,7 +129,7 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-branch }}
-      if: "contains(inputs.diff, 'true') && ('${{ steps.branch-name.outputs.current_branch }}' == '${{ inputs.diff-branch }}')"
+      if: ${{ contains(inputs.diff, 'true') && (steps.branch-name.outputs.current_branch == inputs.diff-branch) }}
       uses: EndBug/add-and-commit@v7
         with:
           remove: 'rm -rf *'
