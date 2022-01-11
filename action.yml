@@ -101,7 +101,7 @@ runs:
         echo -e "\n\`\`\`\n" >> .coverage-output.final
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
         then {
-          echo -e "### Diff against ${{ inputs.diff-branch }}\n" > .coverage-output.final
+          echo -e "### Diff against ${{ inputs.diff-branch }}\n" >> .coverage-output.final
           echo -e "\`\`\`" >> .coverage-output.final
           cat .coverage-output.diff >> .coverage-output.final
           echo -e "\n\`\`\`\n" >> .coverage-output.final

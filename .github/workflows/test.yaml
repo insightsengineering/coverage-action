@@ -39,7 +39,7 @@ jobs:
             diff-branch: main
             diff-storage: _xml_coverage_reports
           - path: test-python.xml
-            threshold: 91.23
+            threshold: 90
             fail: false
             publish: false
             diff: true
