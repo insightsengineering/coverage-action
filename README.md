@@ -1,4 +1,4 @@
-[![SuperLinter](https://github.com/insightsengineering/coverage-action/actions/workflows/linter.yaml/badge.svg)](https://github.com/insightsengineering/coverage-action/actions/workflows/linter.yaml)
+[![SuperLinter](https://github.com/insightsengineering/coverage-action/actions/workflows/lint.yaml/badge.svg)](https://github.com/insightsengineering/coverage-action/actions/workflows/lint.yaml)
 [![Test](https://github.com/insightsengineering/coverage-action/actions/workflows/test.yaml/badge.svg)](https://github.com/insightsengineering/coverage-action/actions/workflows/test.yaml)
 
 <!-- BEGIN_ACTION_DOC -->
@@ -43,19 +43,47 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `True`
+  _Default_: `true`
 
 * `publish`:
 
-  _Description_: Path to package's root.
+  _Description_: Publish the coverage report as an issue comment.
 
   _Required_: `false`
 
-  _Default_: `False`
+  _Default_: `false`
+
+* `diff`:
+
+  _Description_: Create a diff of the coverage report.
+
+  _Required_: `false`
+
+  _Default_: `false`
+
+* `diff-branch`:
+
+  _Description_: Branch to diff against.
+
+  _Required_: `false`
+
+  _Default_: `main`
+
+* `diff-storage`:
+
+  _Description_: Branch where coverage reports are stored for diff purposes.
+
+  _Required_: `false`
+
+  _Default_: `_xml_coverage_reports`
 
 ### Outputs
 None
 <!-- END_ACTION_DOC -->
+
+## How it works
+
+This tool makes use of the [PyCobertura](https://github.com/aconrad/pycobertura) CLI tool to produce the summary outputs. The action also supports `diff`s against a given branch and makes use of a remote branch to store reports, which can be specified via this action.
 
 ## Usage
 
@@ -99,8 +127,16 @@ jobs:
           fail: true
           # Publish the rendered output as a PR comment
           publish: true
-          # Github token to use to publish the PR comment
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Create a coverage diff report.
+          diff: true
+          # Branch to diff against.
+          # Compare the current coverage to the coverage
+          # determined on this branch.
+          diff-branch: main
+          # This is where the coverage reports for the
+          # `diff-branch` are stored.
+          # Branch is created if it doesn't already exist'.
+          diff-storage: _xml_coverage_reports
 ```
 
 An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/5#issuecomment-999738523).

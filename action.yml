@@ -1,3 +1,5 @@
+---
+# yamllint disable rule:line-length
 name: Code Coverage Report Action
 author: Inisghts Engineering
 description: Action that converts a Cobertura XML report into a markdown report.
@@ -20,9 +22,21 @@ inputs:
     required: false
     default: true
   publish:
-    description: Path to package's root.
+    description: Publish the coverage report as an issue comment.
     required: false
     default: false
+  diff:
+    description: Create a diff of the coverage report.
+    required: false
+    default: false
+  diff-branch:
+    description: Branch to diff against.
+    required: false
+    default: main
+  diff-storage:
+    description: Branch where coverage reports are stored for diff purposes.
+    required: false
+    default: _xml_coverage_reports
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -41,10 +55,41 @@ runs:
       with:
         packages: pycobertura==2.1.0
 
+    - name: Get branch names
+      id: branch-names
+      uses: tj-actions/branch-names@v5.1
+
     - name: Generate text report
       run: |
+        mkdir -p coverage-report-action
+        cp ${{ inputs.path }} coverage-report-action/
         pycobertura show ${{ inputs.path }} --output .coverage-output
         cat .coverage-output
+      shell: bash
+
+    - name: Fetch report from ${{ inputs.diff-storage }}
+      if: contains(inputs.diff, 'true')
+      uses: actions/checkout@v2
+      with:
+        path: ${{ inputs.diff-storage }}
+        fetch-depth: 0
+
+    - name: Generate diff against ${{ inputs.diff-branch }}
+      if: contains(inputs.diff, 'true')
+      run: |
+        pushd ${{ inputs.diff-storage }}
+        git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
+        popd
+        if [[ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        then {
+          pycobertura diff --no-color --no-source ${{ inputs.path }} \
+            ${{ inputs.diff-storage }}/${{ inputs.path }} \
+            --output .coverage-output.diff
+          cat .coverage-output.diff
+        } else {
+          echo "${{ inputs.diff-storage }}/${{ inputs.path }} not found! Not diffing."
+        }
+        fi
       shell: bash
 
     - name: Get total
@@ -53,20 +98,28 @@ runs:
           awk '{print $NF}' | tr -d '%' > .coverage-total
       shell: bash
 
-    - name: Generate report body
-      if: "contains(inputs.publish, 'true')"
+    - name: Generate issue comment body
+      if: contains(inputs.publish, 'true')
       run: |
         echo -e "## Code Coverage Summary\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
+        if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
+        then {
+          echo -e "### Diff against ${{ inputs.diff-branch }}\n" >> .coverage-output.final
+          echo -e "\`\`\`" >> .coverage-output.final
+          cat .coverage-output.diff >> .coverage-output.final
+          echo -e "\n\`\`\`\n" >> .coverage-output.final
+        }
+        fi
         echo -e "\nResults for commit: ${{ github.sha }}\n" >> .coverage-output.final
         echo -e "\n_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n" >> .coverage-output.final
         echo -e "\n:recycle: This comment has been updated with latest results\n" >> .coverage-output.final
       shell: bash
 
     - name: Post as comment
-      if: "contains(inputs.publish, 'true')"
+      if: contains(inputs.publish, 'true')
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: ${{ inputs.path }}
@@ -74,7 +127,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Check threshold
-      if: "contains(inputs.fail, 'true')"
+      if: contains(inputs.fail, 'true')
       run: |
         with open('.coverage-total', 'r') as t:
           total = float(t.read().rstrip())
@@ -84,3 +137,20 @@ runs:
             f"Total Coverage of {total}% falls below minimum threshold of {min}%."
           )
       shell: python
+
+    - name: Push XML report to ${{ inputs.diff-storage }}
+      if: contains(inputs.diff, 'true') && (steps.branch-names.outputs.current_branch == inputs.diff-branch)
+      uses: JamesIves/github-pages-deploy-action@v4.2.2
+      with:
+        branch: ${{ inputs.diff-storage }}
+        folder: coverage-report-action
+        token: ${{ github.token }}
+        commit-message: 'Coverage report for ${{ github.sha }}'
+
+    - name: Clean up intermediate files
+      if: always()
+      run: |
+        rm -rf coverage-report-action .coverage-output.final .coverage-output \
+          .coverage-total .coverage-output.diff \
+          ${{ inputs.diff-storage }}-not-found
+      shell: bash
