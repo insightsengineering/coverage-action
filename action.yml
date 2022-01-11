@@ -72,11 +72,7 @@ runs:
       if: ${{ inputs.publish }}
       run: |
         pushd ${{ inputs.diff-storage }}
-        if [[ -z $(git branch --list ${{ inputs.diff-storage }}) ]]
-        then {
-          git checkout ${{ inputs.diff-storage }}
-        }
-        fi
+        git checkout ${{ inputs.diff-storage }} || echo "Branch ${{ inputs.diff-storage }} not found"
         popd
         if [ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" ]
         then {
