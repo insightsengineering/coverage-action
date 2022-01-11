@@ -72,9 +72,9 @@ runs:
       if: ${{ inputs.publish }}
       run: |
         pushd ${{ inputs.diff-storage }}
-        git checkout ${{ inputs.diff-storage }} || echo "Branch ${{ inputs.diff-storage }} not found"
+        git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        if [ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" ]
+        if [[ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
             ${{ inputs.diff-storage }}/${{ inputs.path }} \
@@ -134,7 +134,10 @@ runs:
 
     - name: Clean up intermediate files
       if: always()
-      run: rm -f .coverage-output.final .coverage-output .coverage-total .coverage-output.diff
+      run: |
+        rm -f .coverage-output.final .coverage-output \
+          .coverage-total .coverage-output.diff \
+          ${{ inputs.diff-storage }}-not-found
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-branch }}
