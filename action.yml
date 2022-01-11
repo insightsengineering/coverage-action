@@ -140,14 +140,14 @@ runs:
           ${{ inputs.diff-storage }}-not-found
       shell: bash
 
-    - name: Push XML report to ${{ inputs.diff-branch }}
+    - name: Push XML report to ${{ inputs.diff-storage }}
       if: ${{ inputs.diff && (steps.branch-names.outputs.current_branch == inputs.diff-branch) }}
       uses: EndBug/add-and-commit@v7
       with:
         remove: 'rm -rf *'
         add: "${{ inputs.path }}"
-        branch: some-branch
-        message: 'Your commit message'
+        branch: ${{ inputs.diff-storage }}
+        message: 'Coverage report for ${{ github.sha }}'
         push: true
         default_author: github_actions
         committer_name: GitHub Actions
