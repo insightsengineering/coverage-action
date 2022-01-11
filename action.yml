@@ -77,17 +77,18 @@ runs:
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
       run: |
+        basepath=$(basename ${{ inputs.path }})
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        if [[ -f "${{ inputs.diff-storage }}/$(basename ${{ inputs.path }})" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        if [[ -f "${{ inputs.diff-storage }}/$basepath" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
-            ${{ inputs.diff-storage }}/${{ inputs.path }} \
+            ${{ inputs.diff-storage }}/$basepath \
             --output .coverage-output.diff
           cat .coverage-output.diff
         } else {
-          echo "${{ inputs.diff-storage }}/${{ inputs.path }} not found! Not diffing."
+          echo "${{ inputs.diff-storage }}/$basepath not found! Not diffing."
         }
         fi
       shell: bash
