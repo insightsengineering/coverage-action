@@ -80,7 +80,7 @@ runs:
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        if [[ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        if [[ -f "${{ inputs.diff-storage }}/$(basename ${{ inputs.path }})" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
             ${{ inputs.diff-storage }}/${{ inputs.path }} \
