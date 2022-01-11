@@ -51,15 +51,15 @@ runs:
       with:
         packages: pycobertura==2.1.0
 
+    - name: Get branch names
+      id: branch-names
+      uses: tj-actions/branch-names@v5.1
+
     - name: Generate text report
       run: |
         pycobertura show ${{ inputs.path }} --output .coverage-output
         cat .coverage-output
       shell: bash
-
-    - name: Get branch names
-      id: branch-names
-      uses: tj-actions/branch-names@v5.1
 
     - name: Fetch report from ${{ inputs.diff-storage }}
       if: "contains(inputs.diff, 'true')"
@@ -67,6 +67,7 @@ runs:
       with:
         ref: ${{ inputs.diff-storage }}
         path: ${{ inputs.diff-storage }}
+      continue-on-error: true
 
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: "contains(inputs.publish, 'true')"
@@ -135,7 +136,7 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-branch }}
-      if: ${{ inputs.diff && (steps.branch-name.outputs.current_branch == inputs.diff-branch) }}
+      if: ${{ inputs.diff && (steps.branch-names.outputs.current_branch == inputs.diff-branch) }}
       uses: EndBug/add-and-commit@v7
       with:
         remove: 'rm -rf *'
