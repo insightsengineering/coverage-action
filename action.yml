@@ -62,16 +62,22 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
-      if: "contains(inputs.diff, 'true')"
+      if: ${{ inputs.diff }}
       uses: actions/checkout@v2
       with:
-        ref: ${{ inputs.diff-storage }}
         path: ${{ inputs.diff-storage }}
-      continue-on-error: true
+        fetch-depth: 0
 
     - name: Generate diff against ${{ inputs.diff-branch }}
-      if: "contains(inputs.publish, 'true')"
+      if: ${{ inputs.publish }}
       run: |
+        pushd ${{ inputs.diff-storage }}
+        if [[ -z $(git branch --list ${{ inputs.diff-storage }}) ]]
+        then {
+          git checkout ${{ inputs.diff-storage }}
+        }
+        fi
+        popd
         if [ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" ]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
@@ -91,7 +97,7 @@ runs:
       shell: bash
 
     - name: Generate issue comment body
-      if: "contains(inputs.publish, 'true')"
+      if: ${{ inputs.publish }}
       run: |
         echo -e "## Code Coverage Summary\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
@@ -111,7 +117,7 @@ runs:
       shell: bash
 
     - name: Post as comment
-      if: "contains(inputs.publish, 'true')"
+      if: ${{ inputs.publish }}
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: ${{ inputs.path }}
@@ -119,7 +125,7 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Check threshold
-      if: "contains(inputs.fail, 'true')"
+      if: ${{ inputs.fail }}
       run: |
         with open('.coverage-total', 'r') as t:
           total = float(t.read().rstrip())
