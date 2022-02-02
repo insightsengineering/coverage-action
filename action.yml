@@ -124,7 +124,6 @@ runs:
       with:
         header: ${{ inputs.path }}
         path: .coverage-output.final
-        GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Check threshold
       if: contains(inputs.fail, 'true')
