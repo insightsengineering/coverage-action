@@ -150,7 +150,9 @@ runs:
 
     - name: Pass coverage percent
       id: coverage_percent
-      run: echo "::set-output name=coverage_total::$(cat .coverage-total)\n"
+      run: |
+        echo "::set-output name=coverage_total::$(cat .coverage-total)\n"
+        mkdir -p badges
       shell: bash
 
     - name: Clean up intermediate files
