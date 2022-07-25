@@ -190,6 +190,7 @@ runs:
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         mkdir -p "${BRANCH}"
         mv test-coverage.svg "${BRANCH}"
+        git checkout -b ${{ inputs.diff-storage }} || true
         git add "${BRANCH}/test-coverage.svg"
         git commit -m "Add/Update badge" || true
       shell: bash
@@ -198,5 +199,5 @@ runs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ inputs.token }}
-        branch: HEAD:refs/heads/${{ inputs.diff-storage }}
+        branch: ${{ inputs.diff-storage }}
         directory: ${{ inputs.diff-storage }}/badges
