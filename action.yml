@@ -149,11 +149,10 @@ runs:
         commit-message: 'Coverage report for ${{ github.sha }}'
 
     - name: Pass coverage percent
-      working-directory: ${{ inputs.diff-storage }}
       id: coverage_percent
       run: |
-        echo "::set-output name=coverage_total::$(cat ../.coverage-total)\n"
-        mkdir -p badges
+        echo "::set-output name=coverage_total::$(cat .coverage-total)\n"
+        mkdir -p ${{ inputs.diff-storage }}/badges
       shell: bash
 
     - name: Clean up intermediate files
