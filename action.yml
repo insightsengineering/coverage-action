@@ -68,7 +68,6 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true')
       uses: actions/checkout@v2
       with:
         path: ${{ inputs.diff-storage }}
