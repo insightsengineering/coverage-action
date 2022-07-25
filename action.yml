@@ -198,5 +198,5 @@ runs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ inputs.token }}
-        branch: ${{ inputs.diff-storage }}
+        branch: HEAD:refs/heads/${{ inputs.diff-storage }}
         directory: ${{ inputs.diff-storage }}/badges
