@@ -166,7 +166,6 @@ runs:
 
     # Use the output from the `coverage` step
     - name: Generate the badge SVG image
-      working-directory: ${{ inputs.diff-storage }}
       uses: emibcn/badge-action@v1
       id: badge
       with:
@@ -182,7 +181,7 @@ runs:
           steps.coverage_percent.outputs.coverage_total > 30 && 'red,red,orange'     ||
           steps.coverage_percent.outputs.coverage_total > 20 && 'red,red,red,orange' ||
           'red' }}
-        path: badges/test-coverage.svg
+        path: ${{ inputs.diff-storage }}/badges/test-coverage.svg
 
     - name: Commit badge
       working-directory: ${{ inputs.diff-storage }}/badges
