@@ -153,6 +153,7 @@ runs:
       run: |
         echo "::set-output name=coverage_total::$(cat .coverage-total)\n"
         mkdir -p ${{ inputs.diff-storage }}/badges
+        ls -la ${{ inputs.diff-storage }}
       shell: bash
 
     - name: Clean up intermediate files
