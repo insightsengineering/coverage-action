@@ -190,10 +190,11 @@ runs:
         mv test-coverage.svg "${BRANCH}"
         git add "${BRANCH}/test-coverage.svg"
         git commit -m "Add/Update badge" || true
+      shell: bash
 
     - name: Push badges
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ inputs.token }}
         branch: ${{ inputs.diff-storage }}
         directory: badges
