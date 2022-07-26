@@ -142,6 +142,7 @@ runs:
         mv test-coverage.svg "${BRANCH}"
         git branch ${{ inputs.diff-storage }} || true
         git switch ${{ inputs.diff-storage }}
+        git pull origin ${{ inputs.diff-storage }}
         git add "${BRANCH}/test-coverage.svg"
         git commit -m "Add/Update badge" || true
       shell: bash
