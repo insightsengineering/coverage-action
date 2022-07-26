@@ -191,7 +191,7 @@ runs:
           )
       shell: python
 
-    - name: Push XML report to ${{ inputs.diff-storage }}
+    - name: Commit XML report to ${{ inputs.diff-storage }}
       # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       if: contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
@@ -200,10 +200,20 @@ runs:
         git config --local user.name "GitHub Actions"
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
+        ls -la
         mv ../coverage-report-action .
         git add "coverage-report-action"
+        ls -la
+        git status
         git commit -m "Coverage report for ${{ github.sha }}" || true
       shell: bash
+
+    - name: Push XML report to ${{ inputs.diff-storage }}
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ inputs.token }}
+        branch: ${{ inputs.diff-storage }}
+        directory: ${{ inputs.diff-storage }}/coverage-report-action
 
     - name: Clean up intermediate files
       if: always()
