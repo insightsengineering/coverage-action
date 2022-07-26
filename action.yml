@@ -105,14 +105,6 @@ runs:
         mkdir -p ${{ inputs.diff-storage }}/badges
       shell: bash
 
-    - name: Clean up intermediate files
-      if: always()
-      run: |
-        rm -rf coverage-report-action .coverage-output.final .coverage-output \
-          .coverage-total .coverage-output.diff \
-          ${{ inputs.diff-storage }}-not-found
-      shell: bash
-
     # Use the output from the `coverage_percent` step
     - name: Generate the badge SVG image
       uses: emibcn/badge-action@v1
@@ -161,7 +153,7 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        echo -e "![badge]$({{ github.event.repository.name }}/blob/${{ inputs.diff-storage }}/badges/$BRANCH/test-coverage.svg)\n"
+        echo -e "![badge](${{ github.event.repository.name }}/blob/${{ inputs.diff-storage }}/badges/$BRANCH/test-coverage.svg)\n"
         echo -e "## Code Coverage Summary\n" > .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
@@ -207,3 +199,11 @@ runs:
         folder: coverage-report-action
         token: ${{ github.token }}
         commit-message: 'Coverage report for ${{ github.sha }}'
+
+    - name: Clean up intermediate files
+      if: always()
+      run: |
+        rm -rf coverage-report-action .coverage-output.final .coverage-output \
+          .coverage-total .coverage-output.diff \
+          ${{ inputs.diff-storage }}-not-found
+      shell: bash
