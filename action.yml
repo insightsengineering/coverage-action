@@ -191,11 +191,6 @@ runs:
           )
       shell: python
 
-    - name: Copy repository
-      run: |
-        cp -a ${{ inputs.diff-storage }} .
-      shell: bash
-
     - name: Push XML report to ${{ inputs.diff-storage }}
       # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       if: contains(inputs.diff, 'true')
