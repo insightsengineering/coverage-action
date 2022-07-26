@@ -191,9 +191,10 @@ runs:
           )
       shell: python
 
-    # Without fetching the repo, it's not possible to initialize repo to push XML report
-    - name: Fetch repo
-      uses: actions/checkout@v2
+    - name: Copy repository
+      run: |
+        cp -a ${{ inputs.diff-storage }} .
+      shell: bash
 
     - name: Push XML report to ${{ inputs.diff-storage }}
       # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
