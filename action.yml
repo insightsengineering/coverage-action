@@ -81,7 +81,7 @@ runs:
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
         ls -l ${{ inputs.diff-storage }}
-        if [[ -f "${{ inputs.diff-storage }}/$basepath" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        if [[ -f "${{ inputs.diff-storage }}/$basepath/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
             ${{ inputs.diff-storage }}/$basepath \
