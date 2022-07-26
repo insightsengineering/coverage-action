@@ -103,6 +103,7 @@ runs:
       run: |
         echo "::set-output name=coverage_total::$(cat .coverage-total)"
         mkdir -p ${{ inputs.diff-storage }}/badges
+        cp -a coverage-report-action ${{ inputs.diff-storage }}
       shell: bash
 
     # Use the output from the `coverage_percent` step
@@ -194,6 +195,7 @@ runs:
     - name: Push XML report to ${{ inputs.diff-storage }}
       # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       if: contains(inputs.diff, 'true')
+      working-directory: ${{ inputs.diff-storage }}
       uses: JamesIves/github-pages-deploy-action@v4.2.2
       with:
         branch: ${{ inputs.diff-storage }}
