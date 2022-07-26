@@ -137,7 +137,7 @@ runs:
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         mkdir -p "${BRANCH}"
         # Don't fail if branch already exists
-        git branch ${{ inputs.diff-storage }} || true
+        git checkout --orphan ${{ inputs.diff-storage }} || true
         git switch ${{ inputs.diff-storage }}
         # Don't fail if the branch has not yet been pushed
         git pull origin ${{ inputs.diff-storage }} || true
