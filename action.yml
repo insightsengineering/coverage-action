@@ -83,12 +83,12 @@ runs:
         ls -l ${{ inputs.diff-storage }}
         if [[ -f "${{ inputs.diff-storage }}/$basepath/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
-          pycobertura diff --no-color --no-source ${{ inputs.path }} \
-            ${{ inputs.diff-storage }}/$basepath \
+          pycobertura diff --no-color --no-source ${{ inputs.path }}/coverage.xml \
+            ${{ inputs.diff-storage }}/$basepath/coverage.xml \
             --output .coverage-output.diff
           cat .coverage-output.diff
         } else {
-          echo "${{ inputs.diff-storage }}/$basepath not found! Not diffing."
+          echo "${{ inputs.diff-storage }}/$basepath/coverage.xml not found! Not diffing."
         }
         fi
       shell: bash
