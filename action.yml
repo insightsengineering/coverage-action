@@ -138,7 +138,7 @@ runs:
         mkdir -p "${BRANCH}"
         # Don't fail if branch already exists
         git checkout --orphan ${{ inputs.diff-storage }} || true
-        git switch ${{ inputs.diff-storage }}
+        git switch ${{ inputs.diff-storage }} || true
         # Don't fail if the branch has not yet been pushed
         git pull origin ${{ inputs.diff-storage }} || true
         mv test-coverage.svg "${BRANCH}"
