@@ -80,6 +80,7 @@ runs:
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
+        ls -l ${{ inputs.diff-storage }}
         if [[ -f "${{ inputs.diff-storage }}/$basepath" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
           pycobertura diff --no-color --no-source ${{ inputs.path }} \
@@ -201,7 +202,8 @@ runs:
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         ls -la
-        mv -f ../coverage-report-action .
+        rm -rf coverage-report-action
+        mv ../coverage-report-action .
         git add -f "coverage-report-action"
         ls -la
         git status
