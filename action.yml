@@ -89,22 +89,7 @@ runs:
           pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/$basepath/coverage.xml  \
             ${{ inputs.path }} \
             --output .coverage-output.diff || pycobertura_status=$?
-            echo "status = $pycobertura_status"
-            if [[ "${{ inputs.coverage-reduction-failure }}" == "true" ]]
-            then {
-              if [[ $pycobertura_status == "2" ]]
-              then {
-                echo "Code changes worsened the overall coverage."
-                exit 1
-              }
-              elif [[ $pycobertura_status == "3" ]]
-              then {
-                echo "Code changes introduced uncovered changes but the overall coverage is better than before."
-                exit 1
-              }
-              fi
-            }
-            fi
+            echo "::set-env name=pycobertura_status::$pycobertura_status"
           cat .coverage-output.diff
         } else {
           echo "${{ inputs.diff-storage }}/$basepath/coverage.xml not found! Not diffing."
@@ -199,18 +184,6 @@ runs:
         path: .coverage-output.final
         GITHUB_TOKEN: ${{ inputs.token }}
 
-    - name: Check threshold
-      if: contains(inputs.fail, 'true')
-      run: |
-        with open('.coverage-total', 'r') as t:
-          total = float(t.read().rstrip())
-        min = float('${{ inputs.threshold }}')
-        if total < min:
-          raise SystemExit(
-            f"Total Coverage of {total}% falls below minimum threshold of {min}%."
-          )
-      shell: python
-
     - name: Commit XML report to ${{ inputs.diff-storage }}
       if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       # if: contains(inputs.diff, 'true')
@@ -234,6 +207,37 @@ runs:
         github_token: ${{ inputs.token }}
         branch: ${{ inputs.diff-storage }}
         directory: ${{ inputs.diff-storage }}/coverage-report-action
+
+    - name: Check threshold
+      if: contains(inputs.fail, 'true')
+      run: |
+        with open('.coverage-total', 'r') as t:
+          total = float(t.read().rstrip())
+        min = float('${{ inputs.threshold }}')
+        if total < min:
+          raise SystemExit(
+            f"Total Coverage of {total}% falls below minimum threshold of {min}%."
+          )
+      shell: python
+
+    - name: Fail if coverage worsened
+      run: |
+        if [[ "${{ inputs.coverage-reduction-failure }}" == "true" ]]
+        then {
+          if [[ $pycobertura_status == "2" ]]
+          then {
+            echo "Code changes worsened the overall coverage."
+            exit 1
+          }
+          elif [[ $pycobertura_status == "3" ]]
+          then {
+            echo "Code changes introduced uncovered changes but the overall coverage is better than before."
+            exit 1
+          }
+          fi
+        }
+        fi
+      shell: bash
 
     - name: Clean up intermediate files
       if: always()
