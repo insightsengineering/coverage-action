@@ -80,11 +80,10 @@ runs:
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        ls -l ${{ inputs.diff-storage }}
         if [[ -f "${{ inputs.diff-storage }}/$basepath/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
-          pycobertura diff --no-color --no-source ${{ inputs.path }} \
-            ${{ inputs.diff-storage }}/$basepath/coverage.xml \
+          pycobertura diff --no-color --no-source \
+             ${{ inputs.diff-storage }}/$basepath/coverage.xml ${{ inputs.path }} \
             --output .coverage-output.diff
           cat .coverage-output.diff
         } else {
