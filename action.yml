@@ -82,8 +82,8 @@ runs:
         popd
         if [[ -f "${{ inputs.diff-storage }}/$basepath/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
-          pycobertura diff --no-color --no-source ${{ inputs.path }} \
-            ${{ inputs.diff-storage }}/$basepath/coverage.xml \
+          pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/$basepath/coverage.xml \
+            ${{ inputs.path }} \
             --output .coverage-output.diff
           cat .coverage-output.diff
         } else {
