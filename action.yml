@@ -202,7 +202,7 @@ runs:
         git pull origin ${{ inputs.diff-storage }}
         ls -la
         mv ../coverage-report-action .
-        git add "coverage-report-action"
+        git add -f "coverage-report-action"
         ls -la
         git status
         git commit -m "Coverage report for ${{ github.sha }}" || true
