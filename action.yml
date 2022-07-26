@@ -37,6 +37,10 @@ inputs:
     description: Branch where coverage reports are stored for diff purposes.
     required: false
     default: _xml_coverage_reports
+  coverage-reduction-failure:
+    description: Fail the action when coverage decreased compared to the coverage on diff-branch.
+    required: false
+    default: false
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -84,7 +88,21 @@ runs:
         then {
           pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/$basepath/coverage.xml  \
             ${{ inputs.path }} \
-            --output .coverage-output.diff
+            --output .coverage-output.diff || pycobertura_status=$?
+            echo "status = $pycobertura_status"
+            if [[ "${{ inputs.coverage-reduction-failure }}" == "true" ]]
+            then {
+              if [[ $pycobertura_status == "2" ]]
+              then {
+                echo "Code changes worsened the overall coverage."
+                exit 1
+              }
+              if [[ $pycobertura_status == "3" ]]
+              then {
+                echo "Code changes introduced uncovered changes but the overall coverage is better than before."
+                exit 1
+              }
+            }
           cat .coverage-output.diff
         } else {
           echo "${{ inputs.diff-storage }}/$basepath/coverage.xml not found! Not diffing."
