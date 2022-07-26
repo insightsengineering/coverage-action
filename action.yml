@@ -199,12 +199,16 @@ runs:
     - name: Push XML report to ${{ inputs.diff-storage }}
       # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       if: contains(inputs.diff, 'true')
-      uses: JamesIves/github-pages-deploy-action@v4.2.2
-      with:
-        branch: ${{ inputs.diff-storage }}
-        folder: coverage-report-action
-        token: ${{ github.token }}
-        commit-message: 'Coverage report for ${{ github.sha }}'
+      working-directory: ${{ inputs.diff-storage }}
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
+        git switch ${{ inputs.diff-storage }}
+        git pull origin ${{ inputs.diff-storage }}
+        mv ../coverage-report-action .
+        git add "coverage-report-action"
+        git commit -m "Coverage report for ${{ github.sha }}" || true
+      shell: bash
 
     - name: Clean up intermediate files
       if: always()
