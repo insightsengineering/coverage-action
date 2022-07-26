@@ -76,7 +76,7 @@ runs:
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
       run: |
-        basepath=$(basename ${{ inputs.path }})
+        basepath="coverage-report-action"
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
@@ -201,7 +201,7 @@ runs:
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         ls -la
-        mv ../coverage-report-action .
+        mv -f ../coverage-report-action .
         git add -f "coverage-report-action"
         ls -la
         git status
