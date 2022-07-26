@@ -192,8 +192,8 @@ runs:
       shell: python
 
     - name: Commit XML report to ${{ inputs.diff-storage }}
-      # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
-      if: contains(inputs.diff, 'true')
+      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      # if: contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
       run: |
         git config --local user.email "action@github.com"
@@ -207,8 +207,8 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-storage }}
-      # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
-      if: contains(inputs.diff, 'true')
+      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      # if: contains(inputs.diff, 'true')
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ inputs.token }}
