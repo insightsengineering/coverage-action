@@ -153,8 +153,8 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        echo -e "![badge](${{ github.event.repository.name }}/blob/${{ inputs.diff-storage }}/badges/$BRANCH/test-coverage.svg)\n"
-        echo -e "## Code Coverage Summary\n" > .coverage-output.final
+        echo -e "![badge](${{ github.event.repository.name }}/blob/${{ inputs.diff-storage }}/badges/$BRANCH/test-coverage.svg)\n\n" > .coverage-output.final
+        echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
