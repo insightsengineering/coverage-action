@@ -97,12 +97,14 @@ runs:
                 echo "Code changes worsened the overall coverage."
                 exit 1
               }
-              if [[ $pycobertura_status == "3" ]]
+              elif [[ $pycobertura_status == "3" ]]
               then {
                 echo "Code changes introduced uncovered changes but the overall coverage is better than before."
                 exit 1
               }
+              fi
             }
+            fi
           cat .coverage-output.diff
         } else {
           echo "${{ inputs.diff-storage }}/$basepath/coverage.xml not found! Not diffing."
