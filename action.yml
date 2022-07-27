@@ -80,6 +80,8 @@ runs:
     - name: Initialize storage branch
       working-directory: ${{ inputs.diff-storage }}
       run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
         # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
         # Iterate through directories in top-level directory in repo.
         # Remove anything, except .git, badges and coverage-report-action.
