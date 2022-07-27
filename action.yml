@@ -41,6 +41,14 @@ inputs:
     description: Fail the action when coverage decreased compared to the coverage on diff-branch.
     required: false
     default: false
+  new-uncovered-statements-failure:
+    description: Fail the action when any new uncovered statements were introduced compared to diff-branch.
+    required: false
+    default: false
+  pycobertura-exception-failure:
+    description: Fail the action in case of Pycobertura exception.
+    required: false
+    default: true
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -119,7 +127,8 @@ runs:
         then {
           pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/$basepath/coverage.xml  \
             ${{ inputs.path }} \
-            --output .coverage-output.diff || pycobertura_status=$?
+            --output .coverage-output.diff && pycobertura_status=$? || pycobertura_status=$?
+            # Save status both in case of success and failure.
             echo "pycobertura_status=$pycobertura_status" >> $GITHUB_ENV
           cat .coverage-output.diff
         } else {
@@ -249,11 +258,23 @@ runs:
       shell: python
 
     - name: Fail if coverage worsened
-      if: contains(inputs.diff, 'true') && contains(inputs.coverage-reduction-failure, 'true')
+      if: contains(inputs.diff, 'true')
       run: |
-        if [[ "${{ env.pycobertura_status }}" == "2" || "${{ env.pycobertura_status }}" == "3" ]]
+        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.coverage-reduction-failure }} == "true" ]]
         then {
-          echo "Code changes worsened the overall coverage or introduced uncovered statements."
+          echo "Code changes worsened the overall coverage."
+          exit 1
+        }
+        fi
+        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.new-uncovered-statements-failure }} == "true" ]]
+        then {
+          echo "Code changes introduced uncovered statements but the overall coverage is better than before."
+          exit 1
+        }
+        fi
+        if [[ "${{ env.pycobertura_status }}" == "1" && "${{ inputs.pycobertura-exception-failure }} == "true" ]]
+        then {
+          echo "Pycobertura exception occurred."
           exit 1
         }
         fi
