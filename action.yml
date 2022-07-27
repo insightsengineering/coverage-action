@@ -78,6 +78,7 @@ runs:
         fetch-depth: 0
 
     - name: Initialize storage branch
+      working-directory: ${{ inputs.diff-storage }}
       run: |
         # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
         # Iterate through directories in top-level directory in repo.
