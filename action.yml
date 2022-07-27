@@ -90,8 +90,10 @@ runs:
         find . -mindepth 1 -maxdepth 1 -type f -delete
         # Don't fail if branch already exists.
         git checkout --orphan ${{ inputs.diff-storage }} || true
+        git status
         # Commit removal of files.
-        git add -u
+        git add -u -f
+        git status
         git commit -m "Initialize storage branch" || true
       shell: bash
 
