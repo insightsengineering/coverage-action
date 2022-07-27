@@ -251,14 +251,9 @@ runs:
     - name: Fail if coverage worsened
       if: contains(inputs.diff, 'true') && contains(inputs.coverage-reduction-failure, 'true')
       run: |
-        if [[ ${{ env.pycobertura_status }} == "2" ]]
+        if [[ "${{ env.pycobertura_status }}" == "2" || "${{ env.pycobertura_status }}" == "3" ]]
         then {
-          echo "Code changes worsened the overall coverage."
-          exit 1
-        }
-        elif [[ ${{ env.pycobertura_status }} == "3" ]]
-        then {
-          echo "Code changes introduced uncovered statements but the overall coverage is better than before."
+          echo "Code changes worsened the overall coverage or introduced uncovered statements."
           exit 1
         }
         fi
