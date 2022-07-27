@@ -139,9 +139,9 @@ runs:
         # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
         # Iterate through directories in top-level directory in repo.
         # Remove anything, except .git, badges and coverage-report-action.
-        find . -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
+        find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
         # Remove other files in top-level directory.
-        find . -maxdepth 1 -type f -delete
+        find . -mindepth 1 -maxdepth 1 -type f -delete
         # Don't fail if branch already exists.
         git checkout --orphan ${{ inputs.diff-storage }} || true
         # In case the branch already exists, above commands will have no effect.
