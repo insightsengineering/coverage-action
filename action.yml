@@ -82,9 +82,10 @@ runs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Actions"
+        # Switch to the branch if it already exists
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }} || true
-        # Don't fail if branch already exists.
+        # Create the branch if it doesn't exist yet
         git checkout --orphan ${{ inputs.diff-storage }} || true
         # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
         # Iterate through directories in top-level directory in repo.
@@ -92,7 +93,7 @@ runs:
         find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
         # Remove other files in top-level directory.
         find . -mindepth 1 -maxdepth 1 -type f -delete
-        # Commit has to contain some file
+        # Initial commit has to contain some file
         touch README.md
         git add --all -f
         git commit -m "Initialize storage branch" || true
