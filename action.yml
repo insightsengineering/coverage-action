@@ -136,12 +136,21 @@ runs:
         git config --local user.name "GitHub Actions"
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         mkdir -p "${BRANCH}"
-        # Don't fail if branch already exists
+        # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
+        # Iterate through directories in top-level directory in repo.
+        # Remove anything, except .git, badges and coverage-report-action.
+        find . -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
+        # Remove other files in top-level directory.
+        find . -maxdepth 1 -type f -delete
+        # Don't fail if branch already exists.
         git checkout --orphan ${{ inputs.diff-storage }} || true
+        # In case the branch already exists, above commands will have no effect.
         git switch ${{ inputs.diff-storage }} || true
         # Don't fail if the branch has not yet been pushed
         git pull origin ${{ inputs.diff-storage }} || true
         mv test-coverage.svg "${BRANCH}"
+        # Commit removal of files in case of initializing the orphan branch.
+        git add -u
         git add "${BRANCH}/test-coverage.svg"
         git commit -m "Add/Update badge" || true
       shell: bash
@@ -185,7 +194,8 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Commit XML report to ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      if: contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
       run: |
         git config --local user.email "action@github.com"
@@ -199,7 +209,8 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      # if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      if: contains(inputs.diff, 'true')
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ inputs.token }}
