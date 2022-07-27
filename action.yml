@@ -91,7 +91,7 @@ runs:
         # Remove other files in top-level directory.
         find . -mindepth 1 -maxdepth 1 -type f -delete
         git status
-        git add -u -f
+        git add --all -f
         git commit -m "Initialize storage branch" || true
         git status
       shell: bash
