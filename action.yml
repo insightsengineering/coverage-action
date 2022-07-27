@@ -195,7 +195,7 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/badges/$BRANCH/test-coverage.svg)\n\n" > .coverage-output.final
+        echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/badges/${BRANCH}/test-coverage.svg)\n\n" > .coverage-output.final
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
@@ -222,7 +222,10 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Commit XML report to ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      if: >
+        contains(inputs.diff, 'true') &&
+          startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) &&
+          endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       # if: contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
       run: |
@@ -237,7 +240,10 @@ runs:
       shell: bash
 
     - name: Push XML report to ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true') && startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) && endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
+      if: >
+        contains(inputs.diff, 'true') &&
+          startsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch) &&
+          endsWith(steps.branch-names.outputs.current_branch, inputs.diff-branch)
       # if: contains(inputs.diff, 'true')
       uses: ad-m/github-push-action@master
       with:
