@@ -77,6 +77,28 @@ runs:
         path: ${{ inputs.diff-storage }}
         fetch-depth: 0
 
+    - name: Initialize storage branch
+      run: |
+        # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
+        # Iterate through directories in top-level directory in repo.
+        # Remove anything, except .git, badges and coverage-report-action.
+        find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
+        # Remove other files in top-level directory.
+        find . -mindepth 1 -maxdepth 1 -type f -delete
+        # Don't fail if branch already exists.
+        git checkout --orphan ${{ inputs.diff-storage }} || true
+        # Commit removal of files.
+        git add -u
+        git commit -m "Initialize storage branch" || true
+      shell: bash
+
+    - name: Push storage branch
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ inputs.token }}
+        branch: ${{ inputs.diff-storage }}
+        directory: ${{ inputs.diff-storage }}
+
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
       run: |
@@ -135,22 +157,10 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Actions"
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        mkdir -p "${BRANCH}"
-        # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
-        # Iterate through directories in top-level directory in repo.
-        # Remove anything, except .git, badges and coverage-report-action.
-        find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name badges -o -name coverage-report-action \) -type d -exec rm -rf {} +
-        # Remove other files in top-level directory.
-        find . -mindepth 1 -maxdepth 1 -type f -delete
-        # Don't fail if branch already exists.
-        git checkout --orphan ${{ inputs.diff-storage }} || true
-        # In case the branch already exists, above commands will have no effect.
         git switch ${{ inputs.diff-storage }} || true
-        # Don't fail if the branch has not yet been pushed
-        git pull origin ${{ inputs.diff-storage }} || true
+        git pull origin ${{ inputs.diff-storage }}
+        mkdir -p "${BRANCH}"
         mv test-coverage.svg "${BRANCH}"
-        # Commit removal of files in case of initializing the orphan branch.
-        git add -u
         git add "${BRANCH}/test-coverage.svg"
         git commit -m "Add/Update badge" || true
       shell: bash
