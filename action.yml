@@ -149,6 +149,7 @@ runs:
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
         mkdir -p ${{ inputs.diff-storage }}/data
+        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
       shell: bash
 
     # Use the output from the `coverage_percent` step
