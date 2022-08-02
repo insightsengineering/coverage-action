@@ -234,7 +234,8 @@ runs:
         git config --local user.name "GitHub Actions"
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
-        mv ../coverage-report-action/${{ inputs.path }} ./data/${{ env.diff_storage_branch }}/coverage.xml
+        filename=$(basename ${{ inputs.path }})
+        mv ../coverage-report-action/${filename} ./data/${{ env.diff_storage_branch }}/coverage.xml
         git add -f "./data/${{ env.diff_storage_branch }}/coverage.xml"
         git commit -m "Coverage report for ${{ github.sha }}" || true
       shell: bash
