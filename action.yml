@@ -38,15 +38,15 @@ inputs:
     required: false
     default: _xml_coverage_reports
   coverage-reduction-failure:
-    description: Fail the action when coverage decreased compared to the coverage on diff-branch.
+    description: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
     required: false
     default: false
   new-uncovered-statements-failure:
-    description: Fail the action when any new uncovered statements were introduced compared to diff-branch.
+    description: Fail the action if any new uncovered statements are introduced compared to the `diff-branch`.
     required: false
     default: false
   pycobertura-exception-failure:
-    description: Fail the action in case of Pycobertura exception.
+    description: Fail the action in case of a `Pycobertura` exception.
     required: false
     default: true
 

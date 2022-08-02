@@ -5,14 +5,18 @@
 # Code Coverage Report Action
 
 ### Description
+
 Action that converts a Cobertura XML report into a markdown report.
 ### Action Type
+
 Composite
 
 ### Author
+
 Insights Engineering
 
 ### Inputs
+
 * `token`:
 
   _Description_: Github token to use to publish the check.
@@ -77,7 +81,32 @@ Insights Engineering
 
   _Default_: `_xml_coverage_reports`
 
+* `coverage-reduction-failure`:
+
+  _Description_: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
+
+  _Required_: `false`
+
+  _Default_: `false`
+
+* `new-uncovered-statements-failure`:
+
+  _Description_: Fail the action if any new uncovered statements are introduced compared to the `diff-branch`.
+
+  _Required_: `false`
+
+  _Default_: `false`
+
+* `pycobertura-exception-failure`:
+
+  _Description_: Fail the action in case of a `Pycobertura` exception.
+
+  _Required_: `false`
+
+  _Default_: `true`
+
 ### Outputs
+
 None
 <!-- END_ACTION_DOC -->
 
@@ -139,4 +168,6 @@ jobs:
           diff-storage: _xml_coverage_reports
 ```
 
-An example of the output of the action can be seen [here](https://github.com/insightsengineering/coverage-action/pull/5#issuecomment-999738523).
+An example of the output of the action can be seen below:
+
+![Action output](example.png)
