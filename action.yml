@@ -12,7 +12,7 @@ inputs:
   path:
     description: Path to the Cobertura coverage XML report.
     required: false
-    default: "."
+    default: coverage.xml
   threshold:
     description: The minimum allowed coverage percentage, as a real number.
     required: false
@@ -148,8 +148,13 @@ runs:
         echo "::set-output name=coverage_total::$(cat .coverage-total)"
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
+        echo "${BRANCH}"
+        echo "$BRANCH"
+        echo $BRANCH
+        ls -la
         mkdir -p ${{ inputs.diff-storage }}/data
         mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
+        ls -la ${{ inputs.diff-storage }}/data
       shell: bash
 
     # Use the output from the `coverage_percent` step
@@ -229,7 +234,7 @@ runs:
         git config --local user.name "GitHub Actions"
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
-        mv ../coverage-report-action/coverage.xml ./data/${{ env.diff_storage_branch }}/coverage.xml
+        mv ../coverage-report-action/${{ inputs.path }} ./data/${{ env.diff_storage_branch }}/coverage.xml
         git add -f "./data/${{ env.diff_storage_branch }}/coverage.xml"
         git commit -m "Coverage report for ${{ github.sha }}" || true
       shell: bash
