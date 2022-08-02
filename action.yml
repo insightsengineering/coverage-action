@@ -12,7 +12,7 @@ inputs:
   path:
     description: Path to the Cobertura coverage XML report.
     required: false
-    default: "."
+    default: coverage.xml
   threshold:
     description: The minimum allowed coverage percentage, as a real number.
     required: false
@@ -37,6 +37,18 @@ inputs:
     description: Branch where coverage reports are stored for diff purposes.
     required: false
     default: _xml_coverage_reports
+  coverage-reduction-failure:
+    description: Fail the action when coverage decreased compared to the coverage on diff-branch.
+    required: false
+    default: false
+  new-uncovered-statements-failure:
+    description: Fail the action when any new uncovered statements were introduced compared to diff-branch.
+    required: false
+    default: false
+  pycobertura-exception-failure:
+    description: Fail the action in case of Pycobertura exception.
+    required: false
+    default: true
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -68,11 +80,41 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true')
       uses: actions/checkout@v2
       with:
         path: ${{ inputs.diff-storage }}
         fetch-depth: 0
+
+    - name: Initialize storage branch
+      working-directory: ${{ inputs.diff-storage }}
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
+        # Switch to the branch if it already exists
+        git switch ${{ inputs.diff-storage }} || true
+        git pull origin ${{ inputs.diff-storage }} || true
+        # Create the branch if it doesn't exist yet
+        git checkout --orphan ${{ inputs.diff-storage }} || true
+        # Commands below will have no effect on the storage branch that already exists.
+        # No changes will be committed.
+        # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
+        # Iterate through directories in top-level directory in repo.
+        # Remove anything, except .git, and data.
+        find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name data \) -type d -exec rm -rf {} +
+        # Remove other files in top-level directory.
+        find . -mindepth 1 -maxdepth 1 -type f -delete
+        # Initial commit has to contain some file
+        touch README.md
+        git add --all -f
+        git commit -m "Initialize storage branch" || true
+      shell: bash
+
+    - name: Push storage branch
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ inputs.token }}
+        branch: ${{ inputs.diff-storage }}
+        directory: ${{ inputs.diff-storage }}
 
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
@@ -80,14 +122,16 @@ runs:
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        if [[ -f "${{ inputs.diff-storage }}/${{ inputs.path }}" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        if [[ -f "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
-          pycobertura diff --no-color --no-source ${{ inputs.path }} \
-            ${{ inputs.diff-storage }}/${{ inputs.path }} \
-            --output .coverage-output.diff
+          pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/coverage.xml \
+            ${{ inputs.path }} \
+            --output .coverage-output.diff && pycobertura_status=$? || pycobertura_status=$?
+            # Save status both in case of success and failure.
+            echo "pycobertura_status=$pycobertura_status" >> $GITHUB_ENV
           cat .coverage-output.diff
         } else {
-          echo "${{ inputs.diff-storage }}/${{ inputs.path }} not found! Not diffing."
+          echo "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/coverage.xml not found! Not diffing."
         }
         fi
       shell: bash
@@ -98,10 +142,65 @@ runs:
           awk '{print $NF}' | tr -d '%' > .coverage-total
       shell: bash
 
+    - name: Store coverage percent
+      id: coverage_percent
+      run: |
+        echo "::set-output name=coverage_total::$(cat .coverage-total)"
+        BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+        echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
+        echo "${BRANCH}"
+        echo "$BRANCH"
+        echo $BRANCH
+        ls -la
+        mkdir -p ${{ inputs.diff-storage }}/data
+        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
+        ls -la ${{ inputs.diff-storage }}/data
+      shell: bash
+
+    # Use the output from the `coverage_percent` step
+    - name: Generate the badge SVG image
+      uses: emibcn/badge-action@v1
+      id: badge
+      with:
+        label: 'Test Coverage'
+        status: "${{ steps.coverage_percent.outputs.coverage_total }}%"
+        color: ${{
+          steps.coverage_percent.outputs.coverage_total > 90 && 'green'              ||
+          steps.coverage_percent.outputs.coverage_total > 80 && 'yellow,green'       ||
+          steps.coverage_percent.outputs.coverage_total > 70 && 'yellow'             ||
+          steps.coverage_percent.outputs.coverage_total > 60 && 'orange,yellow'      ||
+          steps.coverage_percent.outputs.coverage_total > 50 && 'orange'             ||
+          steps.coverage_percent.outputs.coverage_total > 40 && 'red,orange'         ||
+          steps.coverage_percent.outputs.coverage_total > 30 && 'red,red,orange'     ||
+          steps.coverage_percent.outputs.coverage_total > 20 && 'red,red,red,orange' ||
+          'red' }}
+        path: ${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg
+
+    - name: Commit badge
+      working-directory: ${{ inputs.diff-storage }}/data
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
+        git switch ${{ inputs.diff-storage }} || true
+        git pull origin ${{ inputs.diff-storage }}
+        git add "${{ env.diff_storage_branch }}/badge.svg"
+        git commit -m "Add/Update badge" || true
+      shell: bash
+
+    # Badge has to be committed and pushed to be used in comment
+    - name: Push badges
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ inputs.token }}
+        branch: ${{ inputs.diff-storage }}
+        directory: ${{ inputs.diff-storage }}/data
+
     - name: Generate issue comment body
       if: contains(inputs.publish, 'true')
       run: |
-        echo -e "## Code Coverage Summary\n" > .coverage-output.final
+        BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+        echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg)\n\n" > .coverage-output.final
+        echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
@@ -125,6 +224,30 @@ runs:
         header: ${{ inputs.path }}
         path: .coverage-output.final
 
+    - name: Commit XML report to ${{ inputs.diff-storage }}
+      if: >
+        contains(inputs.diff, 'true')
+      working-directory: ${{ inputs.diff-storage }}
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
+        git switch ${{ inputs.diff-storage }}
+        git pull origin ${{ inputs.diff-storage }}
+        filename=$(basename ${{ inputs.path }})
+        mv ../coverage-report-action/${filename} ./data/${{ env.diff_storage_branch }}/coverage.xml
+        git add -f "./data/${{ env.diff_storage_branch }}/coverage.xml"
+        git commit -m "Coverage report for ${{ github.sha }}" || true
+      shell: bash
+
+    - name: Push XML report to ${{ inputs.diff-storage }}
+      if: >
+        contains(inputs.diff, 'true')
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ inputs.token }}
+        branch: ${{ inputs.diff-storage }}
+        directory: ${{ inputs.diff-storage }}/data
+
     - name: Check threshold
       if: contains(inputs.fail, 'true')
       run: |
@@ -137,14 +260,28 @@ runs:
           )
       shell: python
 
-    - name: Push XML report to ${{ inputs.diff-storage }}
-      if: contains(inputs.diff, 'true') && (steps.branch-names.outputs.current_branch == inputs.diff-branch)
-      uses: JamesIves/github-pages-deploy-action@v4.2.2
-      with:
-        branch: ${{ inputs.diff-storage }}
-        folder: coverage-report-action
-        token: ${{ github.token }}
-        commit-message: 'Coverage report for ${{ github.sha }}'
+    - name: Fail if coverage worsened
+      if: contains(inputs.diff, 'true')
+      run: |
+        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.coverage-reduction-failure }}" == "true" ]]
+        then {
+          echo "Code changes worsened the overall coverage."
+          exit 1
+        }
+        fi
+        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.new-uncovered-statements-failure }}" == "true" ]]
+        then {
+          echo "Code changes introduced uncovered statements but the overall coverage is better than before."
+          exit 1
+        }
+        fi
+        if [[ "${{ env.pycobertura_status }}" == "1" && "${{ inputs.pycobertura-exception-failure }}" == "true" ]]
+        then {
+          echo "Pycobertura exception occurred."
+          exit 1
+        }
+        fi
+      shell: bash
 
     - name: Clean up intermediate files
       if: always()
