@@ -101,10 +101,9 @@ runs:
         # Iterate through directories in top-level directory in repo.
         # Remove anything, except .git, and data.
         find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name data \) -type d -exec rm -rf {} +
-        # Remove other files in top-level directory.
-        find . -mindepth 1 -maxdepth 1 -type f -delete
-        # Remove .rda files directly in 'data' directory (for 'formatters' repository)
-        find data/ -mindepth 1 -maxdepth 1 -name *.rda -type f -delete
+        # Remove other files in that are not relevant to this action.
+        find . -mindepth 1 -type f \
+          ! \( -name 'badge.svg' -o -name 'coverage.xml' -o -name 'README.md' \) -delete
         # Initial commit has to contain some file
         touch README.md
         git add --all -f
