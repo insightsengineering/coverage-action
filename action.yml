@@ -119,6 +119,7 @@ runs:
         github_token: ${{ inputs.token }}
         branch: ${{ inputs.diff-storage }}
         directory: ${{ inputs.diff-storage }}
+        force: true
 
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
