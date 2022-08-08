@@ -180,7 +180,7 @@ runs:
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }}
         git add "${{ env.diff_storage_branch }}/badge.svg"
-        git commit -m "Add/Update badge: ${BRANCH}" || true
+        git commit -m "Add/Update badge: ${{ github.sha }}" || true
       shell: bash
 
     # Badge has to be committed and pushed to be used in comment
