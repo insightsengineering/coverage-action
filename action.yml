@@ -88,8 +88,8 @@ runs:
     - name: Initialize storage branch
       working-directory: ${{ inputs.diff-storage }}
       run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "GitHub Actions"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "GitHub Actions"
         # Switch to the branch if it already exists
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }} || true
@@ -175,8 +175,8 @@ runs:
     - name: Commit badge
       working-directory: ${{ inputs.diff-storage }}/data
       run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "GitHub Actions"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "GitHub Actions"
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }}
         git add "${{ env.diff_storage_branch }}/badge.svg"
@@ -225,8 +225,8 @@ runs:
         contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Actions"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "GitHub Actions"
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         filename=$(basename ${{ inputs.path }})
