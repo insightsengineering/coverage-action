@@ -101,7 +101,8 @@ runs:
         # Copy necessary files and folders to a temporary location
         cp -r .git README.md data /tmp/
         # Remove everything else
-        rm -rf * .*
+        # Attribution: https://unix.stackexchange.com/a/77313
+        rm -rf ..?* .[!.]* *
         # Restore files from the temporary location
         cp -r /tmp/.git /tmp/README.md /tmp/data .
         git add --all -f
