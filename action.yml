@@ -73,8 +73,8 @@ runs:
 
     - name: Generate text report
       run: |
-        mkdir -p coverage-report-action
-        cp ${{ inputs.path }} coverage-report-action/
+        mkdir -p coverage-action
+        cp ${{ inputs.path }} coverage-action/
         pycobertura show ${{ inputs.path }} --output .coverage-output
         cat .coverage-output
       shell: bash
@@ -107,7 +107,9 @@ runs:
         find . -mindepth 1 -maxdepth 1 -type f ! \( -name 'README.md' \) -delete
         # Initial commit has to contain some file
         touch README.md
-        git add --all -f
+        mkdir -p data
+        touch data/.gitkeep
+        git add README.md data -f
         git commit -m "Update storage branch: $(date)" || true
       shell: bash
 
@@ -231,7 +233,7 @@ runs:
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         filename=$(basename ${{ inputs.path }})
-        mv ../coverage-report-action/${filename} ./data/${{ env.diff_storage_branch }}/coverage.xml
+        mv ../coverage-action/${filename} ./data/${{ env.diff_storage_branch }}/coverage.xml
         git add -f "./data/${{ env.diff_storage_branch }}/coverage.xml"
         git commit -m "Coverage report for ${{ github.sha }}" || true
       shell: bash
@@ -283,7 +285,7 @@ runs:
     - name: Clean up intermediate files
       if: always()
       run: |
-        rm -rf coverage-report-action .coverage-output.final .coverage-output \
+        rm -rf coverage-action .coverage-output.final .coverage-output \
           .coverage-total .coverage-output.diff \
           ${{ inputs.diff-storage }}-not-found
       shell: bash
