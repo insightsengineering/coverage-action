@@ -95,21 +95,16 @@ runs:
         git pull origin ${{ inputs.diff-storage }} || true
         # Create the branch if it doesn't exist yet
         git checkout --orphan ${{ inputs.diff-storage }} || true
-        # Commands below will have no effect on the storage branch that already exists.
-        # No changes will be committed.
-        # Prepare the orphan branch containing only SVG badges and coverage report for diff-branch.
-        # Iterate through directories in top-level directory in repo.
-        # Remove anything, except .git, and data.
-        find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name data \) -type d -exec rm -rf {} +
-        # Remove other files in that are not relevant to this action.
-        find . -mindepth 1 -type f \
-          ! \( -name 'badge.svg' -o -name 'coverage.xml' \) -delete
-        find . -mindepth 1 -maxdepth 1 -type f ! \( -name 'README.md' \) -delete
-        # Initial commit has to contain some file
-        touch README.md
+        # Ensure that the bare minimum components exist in the branch
         mkdir -p data
-        touch data/.gitkeep
-        git add README.md data -f
+        touch README.md data/.gitkeep
+        # Copy necessary files and folders to a temporary location
+        cp -r .git README.md data /tmp/
+        # Remove everything else
+        rm -rf * .*
+        # Restore files from the temporary location
+        cp -r /tmp/.git /tmp/README.md /tmp/data .
+        git add --all -f
         git commit -m "Update storage branch: $(date)" || true
       shell: bash
 
