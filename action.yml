@@ -103,6 +103,8 @@ runs:
         find . -mindepth 1 -maxdepth 1 ! \( -name .git -o -name data \) -type d -exec rm -rf {} +
         # Remove other files in top-level directory.
         find . -mindepth 1 -maxdepth 1 -type f -delete
+        # Remove .rda files directly in 'data' directory (for 'formatters' repository)
+        find data/ -mindepth 1 -maxdepth 1 -name *.rda -type f -delete
         # Initial commit has to contain some file
         touch README.md
         git add --all -f
@@ -148,13 +150,8 @@ runs:
         echo "::set-output name=coverage_total::$(cat .coverage-total)"
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
-        echo "${BRANCH}"
-        echo "$BRANCH"
-        echo $BRANCH
-        ls -la
         mkdir -p ${{ inputs.diff-storage }}/data
         mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
-        ls -la ${{ inputs.diff-storage }}/data
       shell: bash
 
     # Use the output from the `coverage_percent` step
