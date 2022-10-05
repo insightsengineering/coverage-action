@@ -219,8 +219,6 @@ runs:
         if [[ "${{ steps.repository-visibility.outputs.result }}" == "public" ]]
         then {
           echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg)\n\n" > .coverage-output.final
-          # TODO remove
-          echo "Repository is public!"
         }
         else {
           echo -e "🧪 Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\n\n" > .coverage-output.final
