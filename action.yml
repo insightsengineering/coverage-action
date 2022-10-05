@@ -49,13 +49,6 @@ inputs:
     description: Fail the action in case of a `Pycobertura` exception.
     required: false
     default: true
-  private-repo:
-    description: |
-      Whether the repository should be treated as private.
-      When set to false, coverage badge is published in PR comment as an SVG image stored in the repository.
-      When set to true, a text representation of the badge is published in PR comment.
-    required: false
-    default: false
 
 branding: # https://feathericons.com/
   icon: "umbrella"
