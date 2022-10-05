@@ -49,6 +49,13 @@ inputs:
     description: Fail the action in case of a `Pycobertura` exception.
     required: false
     default: true
+  private-repo:
+    description: |
+      Whether the repository should be treated as private.
+      When set to false, coverage badge is published in PR comment as an SVG image stored in the repository.
+      When set to true, a text representation of the badge is published in PR comment.
+    required: false
+    default: false
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -195,9 +202,15 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        curl -o badge.svg https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg
-        echo -e "<img src=\"data:image/svg+xml;base64,$(base64 badge.svg | tr --delete "\n")\"/>" > .coverage-output.final
-        # echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg)\n\n" > .coverage-output.final
+
+        if [[ "${{ inputs.private-repo }}" == "true" ]]
+        then {
+          echo -e "🧪 Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\n\n"
+        }
+        else {
+          echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg)\n\n" > .coverage-output.final
+        }
+        fi
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
