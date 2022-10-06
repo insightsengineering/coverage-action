@@ -198,7 +198,7 @@ runs:
       with:
         script: |
           const result = await github.rest.repos.get({
-            owner: "${{ github.repository }}".split("/")[0],
+            owner: "${{ github.repository_owner }}",
             repo: "${{ github.repository }}".split("/")[1]
           });
           return result.data.visibility;
@@ -208,13 +208,12 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-
         if [[ "${{ steps.repository-visibility.outputs.result }}" == "public" ]]
         then {
           echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/badge.svg)\n\n" > .coverage-output.final
         }
         else {
-          echo -e "🧪 Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\n\n" > .coverage-output.final
+          echo -e "🧪 \$Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\$\n\n" > .coverage-output.final
         }
         fi
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
