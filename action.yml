@@ -58,18 +58,18 @@ runs:
   using: composite
   steps:
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
     - name: Install pycobertura
       uses: BSFishy/pip-action@v1
       with:
-        packages: pycobertura==2.1.0
+        packages: pycobertura==3.0.0
 
     - name: Get branch names
       id: branch-names
-      uses: tj-actions/branch-names@v5.1
+      uses: tj-actions/branch-names@v6.3
 
     - name: Generate text report
       run: |
@@ -80,7 +80,7 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: ${{ inputs.diff-storage }}
         fetch-depth: 0
@@ -146,7 +146,7 @@ runs:
     - name: Store coverage percent
       id: coverage_percent
       run: |
-        echo "::set-output name=coverage_total::$(cat .coverage-total)"
+        echo "coverage_total=$(cat .coverage-total)" >> $GITHUB_OUTPUT
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
         mkdir -p ${{ inputs.diff-storage }}/data
@@ -155,7 +155,7 @@ runs:
 
     # Use the output from the `coverage_percent` step
     - name: Generate the badge SVG image
-      uses: emibcn/badge-action@v1
+      uses: emibcn/badge-action@v2.0.2
       id: badge
       with:
         label: 'Test Coverage'
