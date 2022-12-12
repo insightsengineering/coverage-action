@@ -60,11 +60,11 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.10'
 
     - name: Install pycobertura
       run: |
-        CPATH=$pythonLocation/include/python3.11m \
+        CPATH=$pythonLocation/include/python3.10m \
           pip -q install pycobertura==3.0.0
       shell: bash
 
