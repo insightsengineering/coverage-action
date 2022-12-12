@@ -61,7 +61,6 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        cache: 'pip'
 
     - name: Install pycobertura
       run: pip -q install pycobertura==3.0.0
