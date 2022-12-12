@@ -60,12 +60,12 @@ runs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
+        cache: 'pip'
 
     - name: Install pycobertura
-      uses: BSFishy/pip-action@v1
-      with:
-        packages: pycobertura==3.0.0
+      run: pip -q install pycobertura==3.0.0
+      shell: bash
 
     - name: Get branch names
       id: branch-names
