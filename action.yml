@@ -63,7 +63,9 @@ runs:
         python-version: '3.11'
 
     - name: Install pycobertura
-      run: pip -q install pycobertura==3.0.0
+      run: |
+        CPATH=$pythonLocation/include/python3.11m \
+          pip -q install pycobertura==3.0.0
       shell: bash
 
     - name: Get branch names
