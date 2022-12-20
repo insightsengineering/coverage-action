@@ -108,6 +108,7 @@ runs:
         # Restore files from the temporary location
         echo "Copying data from /tmp/${{ github.sha }}"
         cp -r /tmp/${{ github.sha }}/.git /tmp/${{ github.sha }}/README.md /tmp/${{ github.sha }}/data .
+        rm -rf /tmp/${{ github.sha }}
         git add --all -f
         git commit -m "Update storage branch: $(date)" || true
       shell: bash
