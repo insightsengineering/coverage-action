@@ -99,12 +99,15 @@ runs:
         mkdir -p data
         touch README.md data/.gitkeep
         # Copy necessary files and folders to a temporary location
-        cp -r .git README.md data /tmp/
+        mkdir -p /tmp/${{ github.sha }}
+        echo "Copying data to /tmp/${{ github.sha }}"
+        cp -r .git README.md data /tmp/${{ github.sha }}
         # Remove everything else
         # Attribution: https://unix.stackexchange.com/a/77313
         rm -rf ..?* .[!.]* *
         # Restore files from the temporary location
-        cp -r /tmp/.git /tmp/README.md /tmp/data .
+        echo "Copying data from /tmp/${{ github.sha }}"
+        cp -r /tmp/${{ github.sha }}/.git /tmp/${{ github.sha }}/README.md /tmp/${{ github.sha }}/data .
         git add --all -f
         git commit -m "Update storage branch: $(date)" || true
       shell: bash
