@@ -62,22 +62,22 @@ runs:
       with:
         python-version: '3.10'
 
-    # - name: Install pycobertura
-    #   uses: BSFishy/pip-action@v1
-    #   with:
-    #     packages: pycobertura==3.0.0
+    - name: Install pycobertura
+      uses: BSFishy/pip-action@v1
+      with:
+        packages: pycobertura==3.0.0
 
     - name: Get branch names
       id: branch-names
       uses: tj-actions/branch-names@v6.3
 
-    # - name: Generate text report
-    #   run: |
-    #     mkdir -p coverage-action
-    #     cp ${{ inputs.path }} coverage-action/
-    #     pycobertura show ${{ inputs.path }} --output .coverage-output
-    #     cat .coverage-output
-    #   shell: bash
+    - name: Generate text report
+      run: |
+        mkdir -p coverage-action
+        cp ${{ inputs.path }} coverage-action/
+        pycobertura show ${{ inputs.path }} --output .coverage-output
+        cat .coverage-output
+      shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
       uses: actions/checkout@v3
