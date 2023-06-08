@@ -47,7 +47,7 @@ jobs:
             diff-storage: _xml_coverage_reports_2
     steps:
       - name: Checkout Code 🛎
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run test on ${{ matrix.reports.path }} 🏃‍♀️
         uses: ./
