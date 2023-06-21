@@ -137,7 +137,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Your logic to generate the Cobertura XML goes here
         run: echo "Your logic to generate the Cobertura XML goes here"
