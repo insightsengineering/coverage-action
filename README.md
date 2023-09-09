@@ -123,6 +123,9 @@ Example usage:
 name: Code Coverage
 
 on:
+  # NOTE: Both, the 'pull_request' and the 'push'
+  # events are REQUIRED to take full advantage
+  # of the features of this action.
   pull_request:
     branches:
       - main
