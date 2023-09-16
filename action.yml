@@ -221,9 +221,11 @@ runs:
         }
         fi
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
+        echo -e "<details>\n\n"
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
+        echo -e "</details>\n\n"
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
         then {
           echo -e "### Diff against ${{ inputs.diff-branch }}\n" >> .coverage-output.final
