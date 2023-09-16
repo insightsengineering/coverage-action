@@ -226,13 +226,17 @@ runs:
         fi
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         if [[ "${{ inputs.togglable-report }}" == "true" ]]
-        echo -e "<details>\n\n"
+        then {
+          echo -e "<details>\n\n"
+        }
         fi
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
         if [[ "${{ inputs.togglable-report }}" == "true" ]]
-        echo -e "</details>\n\n"
+        then {
+          echo -e "</details>\n\n"
+        }
         fi
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
         then {
