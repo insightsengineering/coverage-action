@@ -105,6 +105,14 @@ Insights Engineering
 
   _Default_: `true`
 
+* `togglable-report`:
+
+  _Description_: Make the code coverage report togglable.
+
+  _Required_: `false`
+
+  _Default_: `false`
+
 ### Outputs
 
 None
