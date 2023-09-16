@@ -227,7 +227,7 @@ runs:
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
         if [[ "${{ inputs.togglable-report }}" == "true" ]]
         then {
-          echo -e "<details>\n\n"
+          echo -e "<details>\n\n" >> .coverage-output.final
         }
         fi
         echo -e "\`\`\`" >> .coverage-output.final
@@ -235,7 +235,7 @@ runs:
         echo -e "\n\`\`\`\n" >> .coverage-output.final
         if [[ "${{ inputs.togglable-report }}" == "true" ]]
         then {
-          echo -e "</details>\n\n"
+          echo -e "</details>\n\n" >> .coverage-output.final
         }
         fi
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
