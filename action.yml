@@ -49,6 +49,10 @@ inputs:
     description: Fail the action in case of a `Pycobertura` exception.
     required: false
     default: true
+  togglable-report:
+    description: Make the code coverage report togglable.
+    required: false
+    default: false
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -221,9 +225,15 @@ runs:
         }
         fi
         echo -e "## Code Coverage Summary\n" >> .coverage-output.final
+        if [[ "${{ inputs.togglable-report }}" == "true" ]]
+        echo -e "<details>\n\n"
+        fi
         echo -e "\`\`\`" >> .coverage-output.final
         cat .coverage-output >> .coverage-output.final
         echo -e "\n\`\`\`\n" >> .coverage-output.final
+        if [[ "${{ inputs.togglable-report }}" == "true" ]]
+        echo -e "</details>\n\n"
+        fi
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
         then {
           echo -e "### Diff against ${{ inputs.diff-branch }}\n" >> .coverage-output.final
