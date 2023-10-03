@@ -246,10 +246,10 @@ runs:
           echo -e "\n\`\`\`\n" >> .coverage-output.final
         }
         fi
-        COMMIT_SHA='${{ github.sha }}'
-        if [[ x"${{ github.event_name }}" == x'pull_request' ]]
+        COMMIT_SHA="${{ github.sha }}"
+        if [ "${{ github.event_name }}" == "pull_request" ]
         then {
-          COMMIT_SHA='${{ github.event.pull_request.head.sha }}'
+          COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
         }
         fi
         echo -e "\nResults for commit: $COMMIT_SHA\n" >> .coverage-output.final
