@@ -246,7 +246,13 @@ runs:
           echo -e "\n\`\`\`\n" >> .coverage-output.final
         }
         fi
-        echo -e "\nResults for commit: ${{ github.sha }}\n" >> .coverage-output.final
+        COMMIT_SHA="${{ github.sha }}"
+        if [ "${{ github.event_name }}" == "pull_request" ]
+        then {
+          COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+        }
+        fi
+        echo -e "\nResults for commit: $COMMIT_SHA\n" >> .coverage-output.final
         echo -e "\n_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n" >> .coverage-output.final
         echo -e "\n:recycle: This comment has been updated with latest results\n" >> .coverage-output.final
       shell: bash
