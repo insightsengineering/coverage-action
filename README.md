@@ -81,6 +81,14 @@ Insights Engineering
 
   _Default_: `_xml_coverage_reports`
 
+* `coverage-summary-title`:
+
+  _Description_: Title for the code coverage summary in the Pull Request comment.
+
+  _Required_: `false`
+
+  _Default_: `Code Coverage Summary`
+
 * `coverage-reduction-failure`:
 
   _Description_: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
@@ -177,6 +185,9 @@ jobs:
           # `diff-branch` are stored.
           # Branch is created if it doesn't already exist'.
           diff-storage: _xml_coverage_reports
+          # A custom title that can be added to the code
+          # coverage summary in the PR comment.
+          coverage-summary-title: "Code Coverage Summary"
 ```
 
 An example of the output of the action can be seen below:

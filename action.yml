@@ -37,6 +37,10 @@ inputs:
     description: Branch where coverage reports are stored for diff purposes.
     required: false
     default: _xml_coverage_reports
+  coverage-summary-title:
+    description: Title for the code coverage summary in the Pull Request comment.
+    required: false
+    default: "Code Coverage Summary"
   coverage-reduction-failure:
     description: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
     required: false
@@ -224,7 +228,7 @@ runs:
           echo -e "🧪 Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\n\n" > .coverage-output.final
         }
         fi
-        echo -e "## Code Coverage Summary\n" >> .coverage-output.final
+        echo -e "## ${{ inputs.coverage-summary-title }}\n" >> .coverage-output.final
         if [[ "${{ inputs.togglable-report }}" == "true" ]]
         then {
           echo -e "<details>\n\n" >> .coverage-output.final
