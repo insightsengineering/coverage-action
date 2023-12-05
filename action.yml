@@ -180,6 +180,7 @@ runs:
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
         mkdir -p ${{ inputs.diff-storage }}/data
         mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
+        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}/${{ env.test_type_subdirectory }}
       shell: bash
 
     # Use the output from the `coverage_percent` step
