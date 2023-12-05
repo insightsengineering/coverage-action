@@ -93,6 +93,7 @@ runs:
         else
           echo "test_type_subdirectory=''" >> $GITHUB_ENV
         fi
+      shell: bash
 
     - name: Generate text report
       run: |
