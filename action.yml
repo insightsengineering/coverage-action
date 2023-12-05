@@ -91,7 +91,7 @@ runs:
         if [[ "${{ inputs.test-type }}" != "" ]]; then
           echo "test_type_subdirectory=${{ inputs.test-type }}/" >> $GITHUB_ENV
         else
-          echo "test_type_subdirectory=''" >> $GITHUB_ENV
+          echo "test_type_subdirectory=" >> $GITHUB_ENV
         fi
       shell: bash
 
