@@ -33,13 +33,10 @@ inputs:
     description: Branch to diff against.
     required: false
     default: main
-  test-type:
-    description: |
-      Name of test type e.g. unit, integration, etc.
-      In case this action is run multiple times for different test types for the same repository,
-      test coverage will be compared between branches for each given test type separately.
+  storage-subdirectory:
+    description: Subdirectory in the diff-storage branch where the XML reports will be stored.
     required: false
-    default: ""
+    default: "."
   diff-storage:
     description: Branch where coverage reports are stored for diff purposes.
     required: false
@@ -85,15 +82,6 @@ runs:
     - name: Get branch names
       id: branch-names
       uses: tj-actions/branch-names@v6.3
-
-    - name: Set variables
-      run: |
-        if [[ "${{ inputs.test-type }}" != "" ]]; then
-          echo "test_type_subdirectory=${{ inputs.test-type }}/" >> $GITHUB_ENV
-        else
-          echo "test_type_subdirectory=" >> $GITHUB_ENV
-        fi
-      shell: bash
 
     - name: Generate text report
       run: |
@@ -148,20 +136,20 @@ runs:
     - name: Generate diff against ${{ inputs.diff-branch }}
       if: contains(inputs.diff, 'true')
       run: |
-        echo "test_type_subdirectory = '${{ env.test_type_subdirectory }}'"
+        echo "storage_subdirectory = '${{ inputs.storage-subdirectory }}'"
         pushd ${{ inputs.diff-storage }}
         git checkout ${{ inputs.diff-storage }} || touch ${{ inputs.diff-storage }}-not-found
         popd
-        if [[ -f "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ env.test_type_subdirectory }}coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
+        if [[ -f "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml" && (! -f ${{ inputs.diff-storage }}-not-found) ]]
         then {
-          pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ env.test_type_subdirectory }}coverage.xml \
+          pycobertura diff --no-color --no-source ${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml \
             ${{ inputs.path }} \
             --output .coverage-output.diff && pycobertura_status=$? || pycobertura_status=$?
             # Save status both in case of success and failure.
             echo "pycobertura_status=$pycobertura_status" >> $GITHUB_ENV
           cat .coverage-output.diff
         } else {
-          echo "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ env.test_type_subdirectory }}coverage.xml not found! Not diffing."
+          echo "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml not found! Not diffing."
         }
         fi
       shell: bash
@@ -178,9 +166,7 @@ runs:
         echo "coverage_total=$(cat .coverage-total)" >> $GITHUB_OUTPUT
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         echo "diff_storage_branch=$BRANCH" >> $GITHUB_ENV
-        mkdir -p ${{ inputs.diff-storage }}/data
-        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}
-        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}/${{ env.test_type_subdirectory }}
+        mkdir -p ${{ inputs.diff-storage }}/data/${BRANCH}/${{ inputs.storage-subdirectory }}
       shell: bash
 
     # Use the output from the `coverage_percent` step
@@ -200,7 +186,7 @@ runs:
           steps.coverage_percent.outputs.coverage_total > 30 && 'red,red,orange'     ||
           steps.coverage_percent.outputs.coverage_total > 20 && 'red,red,red,orange' ||
           'red' }}
-        path: ${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/${{ env.test_type_subdirectory }}badge.svg
+        path: ${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/badge.svg
 
     - name: Commit badge
       working-directory: ${{ inputs.diff-storage }}/data
@@ -209,7 +195,7 @@ runs:
         git config --global user.name "github-actions[bot]"
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }}
-        git add "${{ env.diff_storage_branch }}/${{ env.test_type_subdirectory }}badge.svg"
+        git add "${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/badge.svg"
         git commit -m "Add/Update badge: ${{ github.sha }}" || true
       shell: bash
 
@@ -242,7 +228,7 @@ runs:
         then {
           # URL encoding for branch name
           URL_ENCODED_BRANCH=$(python3 -c 'import urllib.parse; print(urllib.parse.quote_plus("${{ env.diff_storage_branch }}"))')
-          echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${URL_ENCODED_BRANCH}/${{ env.test_type_subdirectory }}badge.svg)\n\n" > .coverage-output.final
+          echo -e "![badge](https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ inputs.diff-storage }}/data/${URL_ENCODED_BRANCH}/${{ inputs.storage-subdirectory }}/badge.svg)\n\n" > .coverage-output.final
         }
         else {
           echo -e "🧪 Test coverage: ${{ steps.coverage_percent.outputs.coverage_total }}%\n\n" > .coverage-output.final
@@ -298,8 +284,8 @@ runs:
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         filename=$(basename ${{ inputs.path }})
-        mv ../coverage-action/${filename} ./data/${{ env.diff_storage_branch }}/${{ env.test_type_subdirectory }}coverage.xml
-        git add -f "./data/${{ env.diff_storage_branch }}/${{ env.test_type_subdirectory }}coverage.xml"
+        mv ../coverage-action/${filename} ./data/${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/coverage.xml
+        git add -f "./data/${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/coverage.xml"
         git commit -m "Coverage report for ${{ github.sha }}" || true
       shell: bash
 
