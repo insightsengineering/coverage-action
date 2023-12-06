@@ -81,6 +81,14 @@ Insights Engineering
 
   _Default_: `_xml_coverage_reports`
 
+* `storage-subdirectory`:
+
+  _Description_: Subdirectory in the diff-storage branch where the XML reports will be stored.
+
+  _Required_: `false`
+
+  _Default_: `.`
+
 * `coverage-summary-title`:
 
   _Description_: Title for the code coverage summary in the Pull Request comment.
