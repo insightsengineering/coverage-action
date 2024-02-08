@@ -51,7 +51,7 @@ jobs:
             coverage-summary-title: "Code Coverage Summary (test-python.xml)"
     steps:
       - name: Checkout Code 🛎
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run test on ${{ matrix.reports.path }} 🏃‍♀️
         uses: ./
