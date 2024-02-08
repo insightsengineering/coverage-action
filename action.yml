@@ -70,7 +70,7 @@ runs:
   using: composite
   steps:
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -81,7 +81,7 @@ runs:
 
     - name: Get branch names
       id: branch-names
-      uses: tj-actions/branch-names@v6.3
+      uses: tj-actions/branch-names@v7
 
     - name: Generate text report
       run: |
@@ -92,7 +92,7 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: ${{ inputs.diff-storage }}
         fetch-depth: 0
@@ -171,7 +171,7 @@ runs:
 
     # Use the output from the `coverage_percent` step
     - name: Generate the badge SVG image
-      uses: emibcn/badge-action@v2.0.2
+      uses: emibcn/badge-action@v2.0.3
       id: badge
       with:
         label: 'Test Coverage'
@@ -210,7 +210,7 @@ runs:
     - name: Determine repository visibility
       if: contains(inputs.publish, 'true')
       id: repository-visibility
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           const result = await github.rest.repos.get({
