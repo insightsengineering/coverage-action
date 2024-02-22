@@ -131,7 +131,9 @@ Insights Engineering
 
 ### Outputs
 
-None
+* `summary`:
+
+  _Description_: A summary of coverage report
 <!-- END_ACTION_DOC -->
 
 ## How it works
