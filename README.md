@@ -138,7 +138,10 @@ coverage percentage, and line numbers not covered by any test.
   _Default_: `True`
 
 ### Outputs
-None
+
+* `summary`:
+
+  _Description_: A summary of coverage report
 <!-- END_ACTION_DOC -->
 
 ## How it works

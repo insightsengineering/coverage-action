@@ -70,6 +70,11 @@ inputs:
     required: false
     default: true
 
+outputs:
+  summary:
+    description: Summary of coverage report
+    value: ${{ steps.create-output.outputs.summary }}
+
 branding: # https://feathericons.com/
   icon: "umbrella"
   color: "red"
@@ -279,7 +284,11 @@ runs:
         fi
         echo -e "\nResults for commit: $COMMIT_SHA\n" >> .coverage-output.final
         echo -e "\n_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n" >> .coverage-output.final
-        echo -e "\n:recycle: This comment has been updated with latest results\n" >> .coverage-output.final
+        if [[ "${{ inputs.publish }}" == "true" ]]
+        then {
+          echo -e "\n:recycle: This comment has been updated with latest results\n" >> .coverage-output.final
+        }
+        fi
       shell: bash
 
     - name: Post as comment
@@ -288,6 +297,15 @@ runs:
       with:
         header: ${{ inputs.path }}
         path: .coverage-output.final
+
+    - name: Set as output
+      id: create-output
+      run: | 
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "summary<<$EOF" >> $GITHUB_OUTPUT
+        echo "$(cat .coverage-output.final)" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Commit XML report to ${{ inputs.diff-storage }}
       if: >
