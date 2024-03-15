@@ -61,14 +61,14 @@ inputs:
     description: Make the code coverage report togglable.
     required: false
     default: false
-  detailed-coverage:
+  exclude-detailed-coverage:
     description: |
-      Whether a table with a detailed coverage report should be added to PR comment.
-      The table contains the following information per file:
+      Whether a detailed coverage report should be excluded from the PR comment.
+      The detailed coverage report contains the following information per file:
       number of code statements, number of statements not covered by any test,
       coverage percentage, and line numbers not covered by any test.
     required: false
-    default: true
+    default: false
 
 outputs:
   summary:
@@ -248,7 +248,7 @@ runs:
         }
         fi
         echo -e "## ${{ inputs.coverage-summary-title }}\n" >> .coverage-output.final
-        if [[ "${{ inputs.detailed-coverage }}" == "true" ]]
+        if [[ "${{ inputs.exclude-detailed-coverage }}" == "false" ]]
         then {
           if [[ "${{ inputs.togglable-report }}" == "true" ]]
           then {
@@ -300,7 +300,7 @@ runs:
 
     - name: Set as output
       id: create-output
-      run: | 
+      run: |
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "summary<<$EOF" >> $GITHUB_OUTPUT
         echo "$(cat .coverage-output.final)" >> $GITHUB_OUTPUT

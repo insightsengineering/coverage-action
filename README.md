@@ -125,17 +125,17 @@ Inisghts Engineering
 
   _Default_: `False`
 
-* `detailed-coverage`:
+* `exclude-detailed-coverage`:
 
-  _Description_: Whether a table with a detailed coverage report should be added to PR comment.
-The table contains the following information per file:
+  _Description_: Whether a detailed coverage report should be excluded from the PR comment.
+The detailed coverage report contains the following information per file:
 number of code statements, number of statements not covered by any test,
 coverage percentage, and line numbers not covered by any test.
 
 
   _Required_: `false`
 
-  _Default_: `True`
+  _Default_: `False`
 
 ### Outputs
 
