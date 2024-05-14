@@ -127,7 +127,7 @@ Inisghts Engineering
 
 * `exclude-detailed-coverage`:
 
-  _Description_: Whether a detailed coverage report should excluded from the PR comment.
+  _Description_: Whether a detailed coverage report should be excluded from the PR comment.
 The detailed coverage report contains the following information per file:
 number of code statements, number of statements not covered by any test,
 coverage percentage, and line numbers not covered by any test.
