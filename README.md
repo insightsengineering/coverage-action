@@ -5,18 +5,14 @@
 # Code Coverage Report Action
 
 ### Description
-
 Action that converts a Cobertura XML report into a markdown report.
 ### Action Type
-
 Composite
 
 ### Author
-
-Insights Engineering
+Inisghts Engineering
 
 ### Inputs
-
 * `token`:
 
   _Description_: Github token to use to publish the check.
@@ -31,7 +27,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `.`
+  _Default_: `coverage.xml`
 
 * `threshold`:
 
@@ -47,7 +43,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `true`
+  _Default_: `True`
 
 * `publish`:
 
@@ -55,7 +51,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `false`
+  _Default_: `False`
 
 * `diff`:
 
@@ -63,7 +59,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `false`
+  _Default_: `False`
 
 * `diff-branch`:
 
@@ -73,14 +69,6 @@ Insights Engineering
 
   _Default_: `main`
 
-* `diff-storage`:
-
-  _Description_: Branch where coverage reports are stored for diff purposes.
-
-  _Required_: `false`
-
-  _Default_: `_xml_coverage_reports`
-
 * `storage-subdirectory`:
 
   _Description_: Subdirectory in the diff-storage branch where the XML reports will be stored.
@@ -88,6 +76,14 @@ Insights Engineering
   _Required_: `false`
 
   _Default_: `.`
+
+* `diff-storage`:
+
+  _Description_: Branch where coverage reports are stored for diff purposes.
+
+  _Required_: `false`
+
+  _Default_: `_xml_coverage_reports`
 
 * `coverage-summary-title`:
 
@@ -103,7 +99,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `false`
+  _Default_: `False`
 
 * `new-uncovered-statements-failure`:
 
@@ -111,7 +107,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `false`
+  _Default_: `False`
 
 * `pycobertura-exception-failure`:
 
@@ -119,7 +115,7 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `true`
+  _Default_: `True`
 
 * `togglable-report`:
 
@@ -127,10 +123,21 @@ Insights Engineering
 
   _Required_: `false`
 
-  _Default_: `false`
+  _Default_: `False`
+
+* `detailed-coverage`:
+
+  _Description_: Whether a table with a detailed coverage report should be added to PR comment.
+The table contains the following information per file:
+number of code statements, number of statements not covered by any test,
+coverage percentage, and line numbers not covered by any test.
+
+
+  _Required_: `false`
+
+  _Default_: `True`
 
 ### Outputs
-
 None
 <!-- END_ACTION_DOC -->
 
