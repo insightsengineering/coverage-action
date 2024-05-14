@@ -61,6 +61,14 @@ inputs:
     description: Make the code coverage report togglable.
     required: false
     default: false
+  detailed-coverage:
+    description: |
+      Whether a table with a detailed coverage report should be added to PR comment.
+      The table contains the following information per file:
+      number of code statements, number of statements not covered by any test,
+      coverage percentage, and line numbers not covered by any test.
+    required: false
+    default: true
 
 branding: # https://feathericons.com/
   icon: "umbrella"
@@ -235,17 +243,24 @@ runs:
         }
         fi
         echo -e "## ${{ inputs.coverage-summary-title }}\n" >> .coverage-output.final
-        if [[ "${{ inputs.togglable-report }}" == "true" ]]
+        if [[ "${{ inputs.detailed-coverage }}" == "true" ]]
         then {
-          echo -e "<details>\n\n" >> .coverage-output.final
+          if [[ "${{ inputs.togglable-report }}" == "true" ]]
+          then {
+            echo -e "<details>\n\n" >> .coverage-output.final
+          }
+          fi
+          echo -e "\`\`\`" >> .coverage-output.final
+          cat .coverage-output >> .coverage-output.final
+          echo -e "\n\`\`\`\n" >> .coverage-output.final
+          if [[ "${{ inputs.togglable-report }}" == "true" ]]
+          then {
+            echo -e "</details>\n\n" >> .coverage-output.final
+          }
+          fi
         }
-        fi
-        echo -e "\`\`\`" >> .coverage-output.final
-        cat .coverage-output >> .coverage-output.final
-        echo -e "\n\`\`\`\n" >> .coverage-output.final
-        if [[ "${{ inputs.togglable-report }}" == "true" ]]
-        then {
-          echo -e "</details>\n\n" >> .coverage-output.final
+        else {
+          echo -e "\n" >> .coverage-output.final
         }
         fi
         if [[ "${{ inputs.diff }}" == "true" && -f .coverage-output.diff ]]
