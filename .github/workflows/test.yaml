@@ -49,6 +49,24 @@ jobs:
             diff-branch: main
             diff-storage: _xml_coverage_reports_2
             coverage-summary-title: "Code Coverage Summary (test-python.xml)"
+          - path: test-no-branch.xml
+            threshold: 90
+            fail: true
+            publish: true
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_1
+            coverage-summary-title: "Code Coverage Summary (test-no-branch.xml) without detailed coverage"
+            exclude-detailed-coverage: true
+          - path: test-missing-lines.xml
+            threshold: 50
+            fail: false
+            publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports
+            coverage-summary-title: "Code Coverage Summary (test-missing-lines.xml) without detailed coverage"
+            exclude-detailed-coverage: true
     steps:
       - name: Checkout Code 🛎
         uses: actions/checkout@v4
