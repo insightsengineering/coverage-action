@@ -109,12 +109,38 @@ runs:
       with:
         path: ${{ inputs.diff-storage }}
         fetch-depth: 0
+        token: ${{ inputs.token }}
+
+    - name: Get token identity
+      id: identity
+      uses: octokit/graphql-action@v2.x
+      with:
+        query: |
+          query {
+            viewer {
+              databaseId
+              login
+            }
+          }
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Configure git
+      run: |
+        name="${{ fromJSON(steps.identity.outputs.data).viewer.login }}"
+        email="${{ format('{0}+{1}@users.noreply.github.com', fromJSON(steps.identity.outputs.data).viewer.databaseId, fromJSON(steps.identity.outputs.data).viewer.login) }}"
+
+        cat >> "$GITHUB_ENV" << EOF
+        GIT_AUTHOR_NAME=$name
+        GIT_AUTHOR_EMAIL=$email
+        GIT_COMMITTER_NAME=$name
+        GIT_COMMITTER_EMAIL=$email
+        EOF
+      shell: bash
 
     - name: Initialize storage branch
       working-directory: ${{ inputs.diff-storage }}
       run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
         # Switch to the branch if it already exists
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }} || true
@@ -204,8 +230,6 @@ runs:
     - name: Commit badge
       working-directory: ${{ inputs.diff-storage }}/data
       run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
         git switch ${{ inputs.diff-storage }} || true
         git pull origin ${{ inputs.diff-storage }}
         git add "${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/badge.svg"
@@ -295,6 +319,7 @@ runs:
       if: contains(inputs.publish, 'true')
       uses: marocchino/sticky-pull-request-comment@v2
       with:
+        GITHUB_TOKEN: ${{ inputs.token }}
         header: ${{ inputs.path }}
         path: .coverage-output.final
 
@@ -312,8 +337,6 @@ runs:
         contains(inputs.diff, 'true')
       working-directory: ${{ inputs.diff-storage }}
       run: |
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
         git switch ${{ inputs.diff-storage }}
         git pull origin ${{ inputs.diff-storage }}
         filename=$(basename ${{ inputs.path }})
