@@ -369,15 +369,15 @@ runs:
     - name: Fail if coverage worsened
       if: contains(inputs.diff, 'true')
       run: |
-        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.coverage-reduction-failure }}" == "true" ]]
+        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.coverage-reduction-failure }}" == "true" ]]
         then {
           echo "Code changes worsened the overall coverage."
           exit 1
         }
         fi
-        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.new-uncovered-statements-failure }}" == "true" ]]
+        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.new-uncovered-statements-failure }}" == "true" ]]
         then {
-          echo "Code changes introduced uncovered statements but the overall coverage is better than before."
+          echo "Code changes increased the number of uncovered statements."
           exit 1
         }
         fi
