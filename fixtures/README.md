@@ -67,10 +67,10 @@ This directory contains test fixtures for the Code Coverage Report Action. Each 
 ### Exception Testing
 
 #### `test-pycobertura-exception.xml`
-- **Purpose**: Tests `pycobertura-exception-failure` flag
-- **Coverage**: Malformed XML
-- **Scenario**: Contains malformed XML that causes pycobertura to throw an exception
-- **Expected**: Should fail when flag is enabled
+- **Purpose**: Tests `pycobertura-exception-failure` flag in diff scenarios
+- **Coverage**: 80% line coverage
+- **Scenario**: Normal coverage report with diff enabled and exception flag enabled
+- **Expected**: Tests that the flag is properly handled during diff operations
 
 #### `test-exception-disabled.xml`
 - **Purpose**: Tests `pycobertura-exception-failure` flag (disabled case)

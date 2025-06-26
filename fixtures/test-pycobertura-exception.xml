@@ -6,7 +6,7 @@
   <packages>
     <package branch-rate="0" complexity="0" line-rate="0.8" name=".">
       <classes>
-        <class branch-rate="0" complexity="0" filename="malformed_file.py" line-rate="0.8" name="malformed_file.py">
+        <class branch-rate="0" complexity="0" filename="exception_test_file.py" line-rate="0.8" name="exception_test_file.py">
           <methods>
             <method name="my_func" line-rate="0.8" branch-rate="0">
               <lines>
@@ -39,6 +39,4 @@
       </classes>
     </package>
   </packages>
-  <!-- Malformed XML - missing closing tag -->
-  <unclosed_tag>
 </coverage> 

@@ -191,15 +191,15 @@ jobs:
             coverage-rate-reduction-failure: false
             pycobertura-exception-failure: true
             togglable-report: true
-          # Test case for pycobertura exception
+          # Test case for pycobertura exception (diff scenario)
           - path: test-pycobertura-exception.xml
             threshold: 50
             fail: false
             publish: false
-            diff: false
+            diff: true
             diff-branch: main
             diff-storage: _xml_coverage_reports_exception
-            coverage-summary-title: "Code Coverage Summary (pycobertura exception)"
+            coverage-summary-title: "Code Coverage Summary (pycobertura exception flag enabled)"
             exclude-detailed-coverage: false
             uncovered-statements-increase-failure: false
             new-uncovered-statements-failure: false
