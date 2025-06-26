@@ -1,18 +1,20 @@
+# Code Coverage Report Action
+
 [![SuperLinter](https://github.com/insightsengineering/coverage-action/actions/workflows/lint.yaml/badge.svg)](https://github.com/insightsengineering/coverage-action/actions/workflows/lint.yaml)
 [![Test](https://github.com/insightsengineering/coverage-action/actions/workflows/test.yaml/badge.svg)](https://github.com/insightsengineering/coverage-action/actions/workflows/test.yaml)
 
-<!-- BEGIN_ACTION_DOC -->
-# Code Coverage Report Action
-
-### Description
 Action that converts a Cobertura XML report into a markdown report.
-### Action Type
+
+## Action Type
+
 Composite
 
-### Author
+## Author
+
 Inisghts Engineering
 
-### Inputs
+## Inputs
+
 * `token`:
 
   _Description_: Github token to use to publish the check.
@@ -93,9 +95,9 @@ Inisghts Engineering
 
   _Default_: `Code Coverage Summary`
 
-* `coverage-reduction-failure`:
+* `uncovered-statements-increase-failure`:
 
-  _Description_: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
+  _Description_: Fail the action if any changed file has an increase in uncovered lines compared to the `diff-branch`. This corresponds to pycobertura exit code 2, which indicates that at least one changed file has more uncovered lines than before (Miss > 0). Note that this is different from coverage rate reduction - it specifically checks for increases in the absolute number of uncovered lines.
 
   _Required_: `false`
 
@@ -103,7 +105,15 @@ Inisghts Engineering
 
 * `new-uncovered-statements-failure`:
 
-  _Description_: Fail the action if any new uncovered statements are introduced compared to the `diff-branch`.
+  _Description_: Fail the action if new uncovered statements are introduced AND overall coverage improved (total uncovered lines decreased) compared to the `diff-branch`. This corresponds to pycobertura exit code 3, which only occurs when total uncovered lines decreased (Miss <= 0) but there are still new uncovered statements (Missing != []). To fail on ALL new uncovered statements regardless of overall coverage improvement, use this flag together with `uncovered-statements-increase-failure: true`.
+
+  _Required_: `false`
+
+  _Default_: `False`
+
+* `coverage-rate-reduction-failure`:
+
+  _Description_: Fail the action if the overall coverage percentage (rate) decreases compared to the `diff-branch`. This is different from `uncovered-statements-increase-failure` which checks for absolute increases in uncovered lines. This flag specifically looks at the coverage percentage and fails if it goes down, regardless of whether uncovered lines increased or decreased. This is a more forgiving approach that focuses on the relative coverage rate rather than absolute uncovered line counts.
 
   _Required_: `false`
 
@@ -132,7 +142,6 @@ The detailed coverage report contains the following information per file:
 number of code statements, number of statements not covered by any test,
 coverage percentage, and line numbers not covered by any test.
 
-
   _Required_: `false`
 
   _Default_: `False`
@@ -142,11 +151,56 @@ coverage percentage, and line numbers not covered by any test.
 * `summary`:
 
   _Description_: A summary of coverage report
-<!-- END_ACTION_DOC -->
 
 ## How it works
 
 This tool makes use of the [PyCobertura](https://github.com/aconrad/pycobertura) CLI tool to produce the summary outputs. The action also supports `diff`s against a given branch and makes use of a remote branch to store reports, which can be specified via this action.
+
+## Failure Modes
+
+The action provides three different failure modes for detecting coverage regressions, each with different characteristics:
+
+### 1. `uncovered-statements-increase-failure` (Strict)
+
+* **When it fails**: When any changed file has an increase in the absolute number of uncovered lines
+* **Pycobertura exit code**: 2
+* **Use case**: When you want to ensure that no file gets worse coverage, regardless of overall improvements
+* **Example**: If you add 5 uncovered lines to file A but remove 10 uncovered lines from file B, this will still fail because file A got worse
+
+### 2. `new-uncovered-statements-failure` (Moderate)
+
+* **When it fails**: When new uncovered statements are introduced AND overall coverage improved
+* **Pycobertura exit code**: 3
+* **Use case**: When you want to allow overall improvements but still catch new uncovered code
+* **Example**: If you add 5 uncovered lines to file A but remove 10 uncovered lines from file B, this will fail because there are new uncovered statements, even though overall coverage improved
+
+### 3. `coverage-rate-reduction-failure` (Forgiving)
+
+* **When it fails**: When the overall coverage percentage decreases
+* **Pycobertura exit code**: N/A (custom implementation)
+* **Use case**: When you want to focus on the overall coverage rate rather than absolute line counts
+* **Example**: If you add 5 uncovered lines to file A but remove 10 uncovered lines from file B, this will pass if the overall coverage percentage improved
+
+### Combining Failure Modes
+
+You can combine these failure modes for different levels of strictness:
+
+```yaml
+# Most strict: Fail on any uncovered line increase
+uncovered-statements-increase-failure: true
+new-uncovered-statements-failure: true
+coverage-rate-reduction-failure: true
+
+# Moderate: Allow overall improvements but catch new uncovered code
+uncovered-statements-increase-failure: false
+new-uncovered-statements-failure: true
+coverage-rate-reduction-failure: true
+
+# Most forgiving: Only fail if overall coverage percentage decreases
+uncovered-statements-increase-failure: false
+new-uncovered-statements-failure: false
+coverage-rate-reduction-failure: true
+```
 
 ## Usage
 
@@ -206,6 +260,13 @@ jobs:
           # A custom title that can be added to the code
           # coverage summary in the PR comment.
           coverage-summary-title: "Code Coverage Summary"
+          # Failure modes for coverage regression detection:
+          # Fail if any changed file has more uncovered lines (pycobertura exit code 2)
+          uncovered-statements-increase-failure: false
+          # Fail if new uncovered statements are introduced despite overall improvement (pycobertura exit code 3)
+          new-uncovered-statements-failure: false
+          # Fail if the overall coverage percentage decreases (more forgiving approach)
+          coverage-rate-reduction-failure: true
 ```
 
 An example of the output of the action can be seen below:

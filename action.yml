@@ -45,12 +45,32 @@ inputs:
     description: Title for the code coverage summary in the Pull Request comment.
     required: false
     default: "Code Coverage Summary"
-  coverage-reduction-failure:
-    description: Fail the action if code coverage decreased compared to the `diff-branch` is decreased.
+  uncovered-statements-increase-failure:
+    description: |
+      Fail the action if any changed file has an increase in uncovered lines compared to the `diff-branch`.
+      This corresponds to pycobertura exit code 2, which indicates that at least one changed file has
+      more uncovered lines than before (Miss > 0). Note that this is different from coverage rate
+      reduction - it specifically checks for increases in the absolute number of uncovered lines.
     required: false
     default: false
   new-uncovered-statements-failure:
-    description: Fail the action if any new uncovered statements are introduced compared to the `diff-branch`.
+    description: |
+      Fail the action if new uncovered statements are introduced AND overall coverage improved
+      (total uncovered lines decreased) compared to the `diff-branch`.
+      This corresponds to pycobertura exit code 3, which only occurs when total uncovered lines
+      decreased (Miss <= 0) but there are still new uncovered statements (Missing != []).
+      To fail on ALL new uncovered statements regardless of overall coverage improvement,
+      use this flag together with `coverage-reduction-failure: true`.
+    required: false
+    default: false
+  coverage-rate-reduction-failure:
+    description: |
+      Fail the action if the overall coverage percentage (rate) decreases compared to the `diff-branch`.
+      This is different from `uncovered-statements-increase-failure` which checks for absolute
+      increases in uncovered lines. This flag specifically looks at the coverage percentage
+      and fails if it goes down, regardless of whether uncovered lines increased or decreased.
+      This is a more forgiving approach that focuses on the relative coverage rate rather than
+      absolute uncovered line counts.
     required: false
     default: false
   pycobertura-exception-failure:
@@ -75,7 +95,7 @@ outputs:
     description: Summary of coverage report
     value: ${{ steps.create-output.outputs.summary }}
 
-branding: # https://feathericons.com/
+branding:  # https://feathericons.com/
   icon: "umbrella"
   color: "red"
 
@@ -189,6 +209,24 @@ runs:
           cat .coverage-output.diff
         } else {
           echo "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml not found! Not diffing."
+        }
+        fi
+      shell: bash
+
+    - name: Extract diff-branch coverage percentage
+      if: contains(inputs.diff, 'true') && contains(inputs.coverage-rate-reduction-failure, 'true')
+      run: |
+        if [[ -f "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml" ]]
+        then {
+          # Generate a text report for the diff-branch coverage
+          pycobertura show ${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml --output .coverage-output.diff-branch
+          # Extract the total coverage percentage
+          grep -E "^TOTAL " .coverage-output.diff-branch | \
+            awk '{print $NF}' | tr -d '%' > .coverage-total.diff-branch
+          echo "Diff-branch coverage: $(cat .coverage-total.diff-branch)%"
+        } else {
+          echo "Diff-branch coverage file not found, cannot compare coverage rates."
+          echo "0" > .coverage-total.diff-branch
         }
         fi
       shell: bash
@@ -369,15 +407,15 @@ runs:
     - name: Fail if coverage worsened
       if: contains(inputs.diff, 'true')
       run: |
-        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.coverage-reduction-failure }}" == "true" ]]
+        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.uncovered-statements-increase-failure }}" == "true" ]]
         then {
-          echo "Code changes worsened the overall coverage."
+          echo "Code changes increased the number of uncovered lines in at least one file."
           exit 1
         }
         fi
-        if [[ "${{ env.pycobertura_status }}" == "2" && "${{ inputs.new-uncovered-statements-failure }}" == "true" ]]
+        if [[ "${{ env.pycobertura_status }}" == "3" && "${{ inputs.new-uncovered-statements-failure }}" == "true" ]]
         then {
-          echo "Code changes increased the number of uncovered statements."
+          echo "Code changes introduced new uncovered statements despite overall coverage improvement."
           exit 1
         }
         fi
@@ -387,6 +425,18 @@ runs:
           exit 1
         }
         fi
+        if [[ "${{ inputs.coverage-rate-reduction-failure }}" == "true" && -f .coverage-total.diff-branch ]]
+        then {
+          current_coverage=$(cat .coverage-total)
+          diff_branch_coverage=$(cat .coverage-total.diff-branch)
+          if (( $(echo "$current_coverage < $diff_branch_coverage" | bc -l) ))
+          then {
+            echo "Coverage rate decreased from ${diff_branch_coverage}% to ${current_coverage}%."
+            exit 1
+          }
+          fi
+        }
+        fi
       shell: bash
 
     - name: Clean up intermediate files
@@ -394,5 +444,6 @@ runs:
       run: |
         rm -rf coverage-action .coverage-output.final .coverage-output \
           .coverage-total .coverage-output.diff \
+          .coverage-output.diff-branch .coverage-total.diff-branch \
           ${{ inputs.diff-storage }}-not-found
       shell: bash

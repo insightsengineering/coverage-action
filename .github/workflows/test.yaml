@@ -26,6 +26,11 @@ jobs:
             diff-storage: _xml_coverage_reports
             coverage-summary-title: "Code Coverage Summary (test-branch.xml)"
             exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
           - path: test-missing-lines.xml
             threshold: 50
             fail: false
@@ -35,6 +40,11 @@ jobs:
             diff-storage: _xml_coverage_reports_5
             coverage-summary-title: "Code Coverage Summary (test-missing-lines.xml)"
             exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
           - path: test-no-branch.xml
             threshold: 90
             fail: true
@@ -44,6 +54,11 @@ jobs:
             diff-storage: _xml_coverage_reports_1
             coverage-summary-title: "Code Coverage Summary (test-no-branch.xml)"
             exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
           - path: test-python.xml
             threshold: 90
             fail: false
@@ -53,6 +68,11 @@ jobs:
             diff-storage: _xml_coverage_reports_2
             coverage-summary-title: "Code Coverage Summary (test-python.xml)"
             exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
           - path: test-no-branch-2.xml
             threshold: 90
             fail: true
@@ -62,6 +82,11 @@ jobs:
             diff-storage: _xml_coverage_reports_3
             coverage-summary-title: "Code Coverage Summary (test-no-branch.xml) without detailed coverage"
             exclude-detailed-coverage: true
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
           - path: test-missing-lines-2.xml
             threshold: 50
             fail: false
@@ -71,6 +96,191 @@ jobs:
             diff-storage: _xml_coverage_reports_4
             coverage-summary-title: "Code Coverage Summary (test-missing-lines.xml) without detailed coverage"
             exclude-detailed-coverage: true
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # New test cases for uncovered-statements-increase-failure
+          - path: test-uncovered-statements-increase.xml
+            threshold: 50
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_uncovered_increase
+            coverage-summary-title: "Code Coverage Summary (uncovered statements increase)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: true
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # New test cases for new-uncovered-statements-failure
+          - path: test-new-uncovered-statements.xml
+            threshold: 50
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_new_uncovered
+            coverage-summary-title: "Code Coverage Summary (new uncovered statements)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: true
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # New test cases for coverage-rate-reduction-failure
+          - path: test-coverage-rate-reduction.xml
+            threshold: 50
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_rate_reduction
+            coverage-summary-title: "Code Coverage Summary (coverage rate reduction)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: true
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # New test cases for togglable-report
+          - path: test-togglable-report.xml
+            threshold: 80
+            fail: false
+            publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_togglable
+            coverage-summary-title: "Code Coverage Summary (togglable report)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: true
+          # Test case with multiple failure modes enabled
+          - path: test-branch.xml
+            threshold: 80
+            fail: true
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_multiple_failures
+            coverage-summary-title: "Code Coverage Summary (multiple failure modes)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: true
+            new-uncovered-statements-failure: true
+            coverage-rate-reduction-failure: true
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # Test case with togglable report and excluded detailed coverage
+          - path: test-togglable-report.xml
+            threshold: 80
+            fail: false
+            publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_togglable_excluded
+            coverage-summary-title: "Code Coverage Summary (togglable report, excluded details)"
+            exclude-detailed-coverage: true
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: true
+          # Test case for pycobertura exception
+          - path: test-pycobertura-exception.xml
+            threshold: 50
+            fail: false
+            publish: false
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_exception
+            coverage-summary-title: "Code Coverage Summary (pycobertura exception)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # Test case for improved coverage (should not fail coverage-rate-reduction-failure)
+          - path: test-coverage-improved.xml
+            threshold: 80
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_improved
+            coverage-summary-title: "Code Coverage Summary (improved coverage)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: true
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # Test case for no uncovered statements (should not fail new-uncovered-statements-failure)
+          - path: test-no-uncovered-statements.xml
+            threshold: 100
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_no_uncovered
+            coverage-summary-title: "Code Coverage Summary (no uncovered statements)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: true
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # Test case for decreased uncovered statements (should not fail uncovered-statements-increase-failure)
+          - path: test-uncovered-statements-decreased.xml
+            threshold: 90
+            fail: false
+            publish: false
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_decreased_uncovered
+            coverage-summary-title: "Code Coverage Summary (decreased uncovered statements)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: true
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+          # Test case for comprehensive scenario with multiple files
+          - path: test-comprehensive.xml
+            threshold: 70
+            fail: false
+            publish: true
+            diff: true
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_comprehensive
+            coverage-summary-title: "Code Coverage Summary (comprehensive test)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: true
+          # Test case for exception disabled
+          - path: test-exception-disabled.xml
+            threshold: 80
+            fail: false
+            publish: false
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_exception_disabled
+            coverage-summary-title: "Code Coverage Summary (exception disabled)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: false
+            togglable-report: false
     steps:
       - name: Checkout Code 🛎
         uses: actions/checkout@v4
@@ -87,3 +297,8 @@ jobs:
           diff-storage: ${{ matrix.reports.diff-storage }}
           coverage-summary-title: ${{ matrix.reports.coverage-summary-title }}
           exclude-detailed-coverage: ${{ matrix.reports.exclude-detailed-coverage }}
+          uncovered-statements-increase-failure: ${{ matrix.reports.uncovered-statements-increase-failure }}
+          new-uncovered-statements-failure: ${{ matrix.reports.new-uncovered-statements-failure }}
+          coverage-rate-reduction-failure: ${{ matrix.reports.coverage-rate-reduction-failure }}
+          pycobertura-exception-failure: ${{ matrix.reports.pycobertura-exception-failure }}
+          togglable-report: ${{ matrix.reports.togglable-report }}
