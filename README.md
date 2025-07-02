@@ -234,7 +234,7 @@ jobs:
         run: echo "Your logic to generate the Cobertura XML goes here"
 
       - name: Produce the coverage report
-        uses: insightsengineering/coverage-action@v2
+        uses: insightsengineering/coverage-action@v3
         with:
           # Path to the Cobertura XML report.
           path: ./cobertura.xml
