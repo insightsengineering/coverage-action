@@ -222,7 +222,7 @@ runs:
           pycobertura show ${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml --output .coverage-output.diff-branch
           # Extract the total coverage percentage
           grep -E "^TOTAL " .coverage-output.diff-branch | \
-            awk '{printf "%.8f", (1 - $3/$2) * 100}' | tr -d '%' > .coverage-total.diff-branch
+            awk '{printf "%.8f", (1 - $3/$2) * 100}' > .coverage-total.diff-branch
           echo "Diff-branch coverage: $(cat .coverage-total.diff-branch)%"
         } else {
           echo "Diff-branch coverage file not found, cannot compare coverage rates."
@@ -234,7 +234,7 @@ runs:
     - name: Get total
       run: |
         grep -E "^TOTAL " .coverage-output | \
-          awk '{print $NF}' | tr -d '%' > .coverage-total
+          awk '{printf "%.8f", (1 - $3/$2) * 100}' > .coverage-total
       shell: bash
 
     - name: Store coverage percent
