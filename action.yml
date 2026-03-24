@@ -81,6 +81,12 @@ inputs:
     description: Make the code coverage report togglable.
     required: false
     default: false
+  report-low-coverage-only:
+    description: |
+      When true, the detailed coverage report will only include files where
+      coverage is less than 100%. The TOTAL summary line is always included.
+    required: false
+    default: false
   exclude-detailed-coverage:
     description: |
       Whether a detailed coverage report should be excluded from the PR comment.
@@ -121,6 +127,13 @@ runs:
         mkdir -p coverage-action
         cp ${{ inputs.path }} coverage-action/
         pycobertura show ${{ inputs.path }} --output .coverage-output
+        if [[ "${{ inputs.report-low-coverage-only }}" == "true" ]]
+        then {
+          # Keep header lines, the TOTAL line, and any file not at 100% coverage
+          awk 'NR<=2 || /^TOTAL / || !/100%/' .coverage-output > .coverage-output.filtered
+          mv .coverage-output.filtered .coverage-output
+        }
+        fi
         cat .coverage-output
       shell: bash
 

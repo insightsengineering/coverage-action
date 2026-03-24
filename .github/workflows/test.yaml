@@ -281,6 +281,22 @@ jobs:
             coverage-rate-reduction-failure: false
             pycobertura-exception-failure: false
             togglable-report: false
+          # Test case for report-low-coverage-only: file_full_coverage.py (100%) should be excluded
+          - path: test-low-coverage-only.xml
+            threshold: 70
+            fail: false
+            publish: true
+            diff: false
+            diff-branch: main
+            diff-storage: _xml_coverage_reports_low_coverage_only
+            coverage-summary-title: "Code Coverage Summary (low coverage only)"
+            exclude-detailed-coverage: false
+            uncovered-statements-increase-failure: false
+            new-uncovered-statements-failure: false
+            coverage-rate-reduction-failure: false
+            pycobertura-exception-failure: true
+            togglable-report: false
+            report-low-coverage-only: true
     steps:
       - name: Checkout Code 🛎
         uses: actions/checkout@v4
@@ -302,3 +318,4 @@ jobs:
           coverage-rate-reduction-failure: ${{ matrix.reports.coverage-rate-reduction-failure }}
           pycobertura-exception-failure: ${{ matrix.reports.pycobertura-exception-failure }}
           togglable-report: ${{ matrix.reports.togglable-report }}
+          report-low-coverage-only: ${{ matrix.reports.report-low-coverage-only }}
