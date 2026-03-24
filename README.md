@@ -129,7 +129,15 @@ Inisghts Engineering
 
 * `togglable-report`:
 
-  _Description_: Make the code coverage report togglable.
+  _Description_: Wrap the detailed coverage report in a collapsible `<details>` block in the PR comment, so it is hidden by default and can be expanded on demand.
+
+  _Required_: `false`
+
+  _Default_: `False`
+
+* `report-low-coverage-only`:
+
+  _Description_: When `true`, the detailed coverage report will only include files where coverage is less than 100%. Files with full coverage are omitted to keep the report focused on files that need attention. The `TOTAL` summary line is always included regardless of this setting. Has no effect when `exclude-detailed-coverage` is `true`.
 
   _Required_: `false`
 
