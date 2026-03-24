@@ -129,8 +129,8 @@ runs:
         pycobertura show ${{ inputs.path }} --output .coverage-output
         if [[ "${{ inputs.report-low-coverage-only }}" == "true" ]]
         then {
-          # Keep header lines, the TOTAL line, and any file not at 100% coverage
-          awk 'NR<=2 || /^TOTAL / || !/100%/' .coverage-output > .coverage-output.filtered
+          # Keep header lines, the TOTAL line, and any file with missed lines (Miss != 0)
+          awk 'NR<=2 || /^TOTAL / || $3 != 0' .coverage-output > .coverage-output.filtered
           mv .coverage-output.filtered .coverage-output
         }
         fi
