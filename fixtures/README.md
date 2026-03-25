@@ -82,9 +82,15 @@ This directory contains test fixtures for the Code Coverage Report Action. Each 
 
 #### `test-togglable-report.xml`
 - **Purpose**: Tests `togglable-report` flag
-- **Coverage**: 85% line coverage
+- **Coverage**: 85% line coverage (single file: `togglable_test_file.py`)
 - **Scenario**: Normal coverage report
-- **Expected**: Should generate collapsible report format when flag is enabled
+- **Expected**: When `togglable-report: true`, the detailed coverage table is wrapped in a collapsible `<details>` block in the PR comment
+
+#### `test-low-coverage-only.xml`
+- **Purpose**: Tests `report-low-coverage-only` flag
+- **Coverage**: 75% overall (3 files: `file_full_coverage.py` at 100%, `file_partial_coverage.py` at 60%, `file_low_coverage.py` at 30%)
+- **Scenario**: Mix of fully-covered and partially-covered files
+- **Expected**: When `report-low-coverage-only: true`, only `file_partial_coverage.py` and `file_low_coverage.py` appear in the report; `file_full_coverage.py` is omitted; the TOTAL line is always shown
 
 ### Comprehensive Testing
 
@@ -111,7 +117,7 @@ The test matrix in `.github/workflows/test.yaml` includes test cases for:
 3. **Positive cases**: Scenarios where failure flags should NOT trigger
 4. **Combined scenarios**: Multiple flags enabled together
 5. **Exception handling**: Both enabled and disabled exception failure modes
-6. **Report formatting**: Togglable reports with and without detailed coverage
+6. **Report formatting**: Togglable reports (collapsible `<details>`) with and without detailed coverage
 7. **Edge cases**: Comprehensive testing with multiple files and varying coverage
 
 ## Usage
