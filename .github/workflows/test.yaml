@@ -299,7 +299,7 @@ jobs:
             report-low-coverage-only: true
     steps:
       - name: Checkout Code 🛎
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Run test on ${{ matrix.reports.path }} 🏃‍♀️
         uses: ./
