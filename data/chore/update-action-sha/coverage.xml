@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<coverage branch-rate="0" line-rate="0.75" timestamp="1460488624050" version="4.0.3">
+  <sources>
+    <source></source>
+  </sources>
+  <packages>
+    <package branch-rate="0" complexity="0" line-rate="0.75" name=".">
+      <classes>
+        <class branch-rate="0" complexity="0" filename="file1_high_coverage.py" line-rate="0.9" name="file1_high_coverage.py">
+          <methods>
+            <method name="my_func" line-rate="0.9" branch-rate="0">
+              <lines>
+                <line hits="1" number="1" branch="false"/>
+                <line hits="1" number="2" branch="false"/>
+                <line hits="1" number="3" branch="false"/>
+                <line hits="1" number="4" branch="false"/>
+                <line hits="1" number="5" branch="false"/>
+                <line hits="1" number="6" branch="false"/>
+                <line hits="1" number="7" branch="false"/>
+                <line hits="1" number="8" branch="false"/>
+                <line hits="0" number="9" branch="false"/>
+                <line hits="1" number="10" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="1" number="2" branch="false"/>
+            <line hits="1" number="3" branch="false"/>
+            <line hits="1" number="4" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="1" number="7" branch="false"/>
+            <line hits="1" number="8" branch="false"/>
+            <line hits="0" number="9" branch="false"/>
+            <line hits="1" number="10" branch="false"/>
+          </lines>
+        </class>
+        <class branch-rate="0" complexity="0" filename="file2_medium_coverage.py" line-rate="0.6" name="file2_medium_coverage.py">
+          <methods>
+            <method name="my_func" line-rate="0.6" branch-rate="0">
+              <lines>
+                <line hits="1" number="1" branch="false"/>
+                <line hits="1" number="2" branch="false"/>
+                <line hits="0" number="3" branch="false"/>
+                <line hits="0" number="4" branch="false"/>
+                <line hits="1" number="5" branch="false"/>
+                <line hits="1" number="6" branch="false"/>
+                <line hits="0" number="7" branch="false"/>
+                <line hits="0" number="8" branch="false"/>
+                <line hits="1" number="9" branch="false"/>
+                <line hits="1" number="10" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="1" number="2" branch="false"/>
+            <line hits="0" number="3" branch="false"/>
+            <line hits="0" number="4" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="1" number="6" branch="false"/>
+            <line hits="0" number="7" branch="false"/>
+            <line hits="0" number="8" branch="false"/>
+            <line hits="1" number="9" branch="false"/>
+            <line hits="1" number="10" branch="false"/>
+          </lines>
+        </class>
+        <class branch-rate="0" complexity="0" filename="file3_low_coverage.py" line-rate="0.3" name="file3_low_coverage.py">
+          <methods>
+            <method name="my_func" line-rate="0.3" branch-rate="0">
+              <lines>
+                <line hits="1" number="1" branch="false"/>
+                <line hits="0" number="2" branch="false"/>
+                <line hits="0" number="3" branch="false"/>
+                <line hits="0" number="4" branch="false"/>
+                <line hits="1" number="5" branch="false"/>
+                <line hits="0" number="6" branch="false"/>
+                <line hits="0" number="7" branch="false"/>
+                <line hits="0" number="8" branch="false"/>
+                <line hits="1" number="9" branch="false"/>
+                <line hits="0" number="10" branch="false"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line hits="1" number="1" branch="false"/>
+            <line hits="0" number="2" branch="false"/>
+            <line hits="0" number="3" branch="false"/>
+            <line hits="0" number="4" branch="false"/>
+            <line hits="1" number="5" branch="false"/>
+            <line hits="0" number="6" branch="false"/>
+            <line hits="0" number="7" branch="false"/>
+            <line hits="0" number="8" branch="false"/>
+            <line hits="1" number="9" branch="false"/>
+            <line hits="0" number="10" branch="false"/>
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage> 
