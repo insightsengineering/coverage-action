@@ -114,7 +114,7 @@ runs:
         python-version: '3.11'
 
     - name: Install pycobertura
-      uses: insightsengineering/pip-action@9252b12ade07a9e628ab42b90565beaa56e8b85c # v2.0.1
+      uses: insightsengineering/pip-action@905c7a9be173f62965b791e91d0079355d99f19b # v2.0.2
       with:
         packages: pycobertura==3.0.0
 
