@@ -87,6 +87,14 @@ Inisghts Engineering
 
   _Default_: `_xml_coverage_reports`
 
+* `skip-diff-storage`:
+
+  _Description_: Skip all interactions with the `diff-storage` branch (fetch, diff generation, badge build, commit, and push). When `true`, the action only produces a coverage report from the input XML and does not require write access to the repo. The PR comment falls back to a text coverage line instead of the badge image (which would not exist on the storage branch).
+
+  _Required_: `false`
+
+  _Default_: `False`
+
 * `coverage-summary-title`:
 
   _Description_: Title for the code coverage summary in the Pull Request comment.

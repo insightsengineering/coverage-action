@@ -41,6 +41,15 @@ inputs:
     description: Branch where coverage reports are stored for diff purposes.
     required: false
     default: _xml_coverage_reports
+  skip-diff-storage:
+    description: |
+      Skip all interactions with the `diff-storage` branch (fetch, diff
+      generation, badge build, commit, and push). When `true`, the action
+      only produces a coverage report from the input XML and does not
+      require write access to the repo. The PR comment falls back to a
+      text coverage line instead of the badge image.
+    required: false
+    default: false
   coverage-summary-title:
     description: Title for the code coverage summary in the Pull Request comment.
     required: false
@@ -138,6 +147,7 @@ runs:
       shell: bash
 
     - name: Fetch report from ${{ inputs.diff-storage }}
+      if: inputs.skip-diff-storage != 'true'
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       with:
         path: ${{ inputs.diff-storage }}
@@ -145,6 +155,7 @@ runs:
         token: ${{ inputs.token }}
 
     - name: Get token identity
+      if: inputs.skip-diff-storage != 'true'
       id: identity
       uses: octokit/graphql-action@f7836e89a7e5bac63911bbe9653c21147b3d9bc3
       with:
@@ -159,6 +170,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Configure git
+      if: inputs.skip-diff-storage != 'true'
       run: |
         name="${{ fromJSON(steps.identity.outputs.data).viewer.login }}"
         email="${{ format('{0}+{1}@users.noreply.github.com', fromJSON(steps.identity.outputs.data).viewer.databaseId, fromJSON(steps.identity.outputs.data).viewer.login) }}"
@@ -172,6 +184,7 @@ runs:
       shell: bash
 
     - name: Initialize storage branch
+      if: inputs.skip-diff-storage != 'true'
       working-directory: ${{ inputs.diff-storage }}
       run: |
         # Switch to the branch if it already exists
@@ -198,6 +211,7 @@ runs:
       shell: bash
 
     - name: Push storage branch
+      if: inputs.skip-diff-storage != 'true'
       uses: ad-m/github-push-action@4cc74773234f74829a8c21bc4d69dd4be9cfa599
       with:
         github_token: ${{ inputs.token }}
@@ -206,7 +220,7 @@ runs:
         force: true
 
     - name: Generate diff against ${{ inputs.diff-branch }}
-      if: contains(inputs.diff, 'true')
+      if: contains(inputs.diff, 'true') && inputs.skip-diff-storage != 'true'
       run: |
         echo "storage_subdirectory = '${{ inputs.storage-subdirectory }}'"
         pushd ${{ inputs.diff-storage }}
@@ -227,7 +241,7 @@ runs:
       shell: bash
 
     - name: Extract diff-branch coverage percentage
-      if: contains(inputs.diff, 'true') && contains(inputs.coverage-rate-reduction-failure, 'true')
+      if: contains(inputs.diff, 'true') && contains(inputs.coverage-rate-reduction-failure, 'true') && inputs.skip-diff-storage != 'true'
       run: |
         if [[ -f "${{ inputs.diff-storage }}/data/${{ inputs.diff-branch }}/${{ inputs.storage-subdirectory }}/coverage.xml" ]]
         then {
@@ -261,6 +275,7 @@ runs:
 
     # Use the output from the `coverage_percent` step
     - name: Generate the badge SVG image
+      if: inputs.skip-diff-storage != 'true'
       uses: emibcn/badge-action@808173dd03e2f30c980d03ee49e181626088eee8 # v2.0.3
       id: badge
       with:
@@ -279,6 +294,7 @@ runs:
         path: ${{ inputs.diff-storage }}/data/${{ env.diff_storage_branch }}/${{ inputs.storage-subdirectory }}/badge.svg
 
     - name: Commit badge
+      if: inputs.skip-diff-storage != 'true'
       working-directory: ${{ inputs.diff-storage }}/data
       run: |
         git switch ${{ inputs.diff-storage }} || true
@@ -289,6 +305,7 @@ runs:
 
     # Badge has to be committed and pushed to be used in comment
     - name: Push badges
+      if: inputs.skip-diff-storage != 'true'
       uses: ad-m/github-push-action@4cc74773234f74829a8c21bc4d69dd4be9cfa599
       with:
         github_token: ${{ inputs.token }}
@@ -312,7 +329,7 @@ runs:
       if: contains(inputs.publish, 'true')
       run: |
         BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-        if [[ "${{ steps.repository-visibility.outputs.result }}" == "public" ]]
+        if [[ "${{ steps.repository-visibility.outputs.result }}" == "public" && "${{ inputs.skip-diff-storage }}" != "true" ]]
         then {
           # URL encoding for branch name
           URL_ENCODED_BRANCH=$(python3 -c 'import urllib.parse; print(urllib.parse.quote_plus("${{ env.diff_storage_branch }}"))')
@@ -385,7 +402,7 @@ runs:
 
     - name: Commit XML report to ${{ inputs.diff-storage }}
       if: >
-        contains(inputs.diff, 'true')
+        contains(inputs.diff, 'true') && inputs.skip-diff-storage != 'true'
       working-directory: ${{ inputs.diff-storage }}
       run: |
         git switch ${{ inputs.diff-storage }}
@@ -398,7 +415,7 @@ runs:
 
     - name: Push XML report to ${{ inputs.diff-storage }}
       if: >
-        contains(inputs.diff, 'true')
+        contains(inputs.diff, 'true') && inputs.skip-diff-storage != 'true'
       uses: ad-m/github-push-action@4cc74773234f74829a8c21bc4d69dd4be9cfa599
       with:
         github_token: ${{ inputs.token }}
